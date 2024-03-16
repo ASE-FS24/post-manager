@@ -13,7 +13,7 @@ public interface PostService {
 
     Post findById(String id);
 
-    List<Post> findByUserId(String userId);
+    List<Post> findByAuthorId(String authorId);
 
     Post updatePost(String id, UpdatePostDTO post);
 

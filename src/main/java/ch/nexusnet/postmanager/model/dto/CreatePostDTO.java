@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class CreatePostDTO {
@@ -28,4 +30,6 @@ public class CreatePostDTO {
 
     @NotBlank(message = "Description cannot be blank")
     private String description;
+
+    private List<String> hashtags;
 }

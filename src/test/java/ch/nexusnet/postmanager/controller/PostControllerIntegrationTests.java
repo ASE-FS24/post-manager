@@ -1,4 +1,4 @@
-package ch.nexusnet.postmanager;
+package ch.nexusnet.postmanager.controller;
 
 import ch.nexusnet.postmanager.aws.dynamodb.model.mapper.DynamoPostToPostMapper;
 import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBPost;
@@ -20,6 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -36,6 +38,9 @@ public class PostControllerIntegrationTests {
     private static final String DESCRIPTION = "Initial Post Description. Lorem ipsum dolor sit amet.";
     private static final String IMAGE = "Image";
     private static final String CREATION_DATE = FORMATTER.format(LocalDateTime.now());
+
+    private static final List<String> HASHTAGS = Arrays.asList("Project", "UZH");
+
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -54,6 +59,7 @@ public class PostControllerIntegrationTests {
         dynamoDBPost.setDescription(DESCRIPTION);
         dynamoDBPost.setCreatedDateTime(CREATION_DATE);
         dynamoDBPost.setImage(IMAGE);
+        dynamoDBPost.setHashtags(HASHTAGS);
 
         savedPost = DynamoPostToPostMapper.map(dynamoDBPostRepository.save(dynamoDBPost));
     }
@@ -78,6 +84,7 @@ public class PostControllerIntegrationTests {
         createPostDTO.setShortDescription(SHORT_DESCRIPTION);
         createPostDTO.setDescription(DESCRIPTION);
         createPostDTO.setTitle(TITLE);
+        createPostDTO.setHashtags(HASHTAGS);
 
         String responseBody = mockMvc.perform(post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,6 +102,7 @@ public class PostControllerIntegrationTests {
                 .andExpect(jsonPath("$.editedDateTime").isEmpty())
                 .andExpect(jsonPath("$.createdDateTime").exists())
                 .andExpect(jsonPath("$.likeNumber").value(0))
+                .andExpect(jsonPath("$.hashtags").value(HASHTAGS))
                 .andReturn().getResponse().getContentAsString();
 
         String createdPostId = JsonPath.parse(responseBody).read("$.id", String.class);
@@ -141,9 +149,9 @@ public class PostControllerIntegrationTests {
 
 
     @Test
-    public void testGetPostsByUserId() throws Exception {
-        String userId = savedPost.getAuthorId();
-        mockMvc.perform(get("/posts/user/{userId}", userId))
+    public void testGetPostsByAuthorId() throws Exception {
+        String authorId = savedPost.getAuthorId();
+        mockMvc.perform(get("/posts/user/{authorId}", authorId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }

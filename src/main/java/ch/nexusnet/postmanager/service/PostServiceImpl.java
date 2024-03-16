@@ -54,8 +54,8 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public List<Post> findByUserId(String userId) {
-        return dynamoDBPostRepository.findByAuthorId(userId).stream().map(DynamoPostToPostMapper::map)
+    public List<Post> findByAuthorId(String authorId) {
+        return dynamoDBPostRepository.findByAuthorId(authorId).stream().map(DynamoPostToPostMapper::map)
                 .collect(Collectors.toList());
     }
 
@@ -95,6 +95,9 @@ public class PostServiceImpl implements PostService {
         }
         if (postDetails.getImage() != null) {
             post.setImage(postDetails.getImage());
+        }
+        if (postDetails.getHashtags() != null) {
+            post.setHashtags(postDetails.getHashtags());
         }
     }
 }

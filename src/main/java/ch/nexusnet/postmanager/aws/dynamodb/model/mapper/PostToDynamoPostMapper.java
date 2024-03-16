@@ -14,6 +14,7 @@ public class PostToDynamoPostMapper {
         dynamoDBPost.setImage(post.getImage());
         dynamoDBPost.setShortDescription(post.getShortDescription());
         dynamoDBPost.setDescription(post.getDescription());
+        dynamoDBPost.setHashtags(post.getHashtags());
 
         return dynamoDBPost;
     }
