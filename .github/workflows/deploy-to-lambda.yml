@@ -1,0 +1,41 @@
+name: Deploy to AWS Lambda
+
+on:
+  push:
+    branches:
+      - main  # Adjust as needed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'  # or any other version you are using
+          distribution: 'zulu'
+
+      - name: Setup AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1 # Modify this to your desired AWS region
+
+      - name: Build with Maven
+        run: mvn -B package -DfinalName=postmanager --file pom.xml
+
+      - name: Deploy to AWS Lambda
+        run: |
+          # Constants
+          S3_BUCKET=nexusnet-post-manager
+          S3_KEY=postmanager.jar
+          LAMBDA_FUNCTION_NAME=nexusnet-post-manager
+          # Upload the updated jar to S3
+          aws s3 cp target/usermanager.jar s3://$S3_BUCKET/$S3_KEY
+          # Assuming your JAR file is in the target directory
+          aws lambda update-function-code  --function-name $LAMBDA_FUNCTION_NAME --s3-bucket $S3_BUCKET --s3-key $S3_KEY
