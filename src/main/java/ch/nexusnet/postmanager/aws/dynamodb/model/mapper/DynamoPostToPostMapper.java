@@ -22,7 +22,6 @@ public class DynamoPostToPostMapper {
         post.setLikeNumber(dynamoDBPost.getLikeNumber());
         post.setHashtags(dynamoDBPost.getHashtags());
 
-        // Parse LocalDateTime from ISO 8601 String
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         if (dynamoDBPost.getCreatedDateTime() != null && !dynamoDBPost.getCreatedDateTime().isEmpty()) {
             post.setCreatedDateTime(LocalDateTime.parse(dynamoDBPost.getCreatedDateTime(), formatter));

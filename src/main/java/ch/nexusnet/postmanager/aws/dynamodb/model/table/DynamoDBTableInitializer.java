@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+//TODO Make it run only in dev or prod environment, else delete
 public class DynamoDBTableInitializer {
 
     private final DynamoDBMapper dynamoDBMapper;

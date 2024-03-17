@@ -102,7 +102,8 @@ public class PostControllerIntegrationTests {
                 .andExpect(jsonPath("$.editedDateTime").isEmpty())
                 .andExpect(jsonPath("$.createdDateTime").exists())
                 .andExpect(jsonPath("$.likeNumber").value(0))
-                .andExpect(jsonPath("$.hashtags").value(HASHTAGS))
+                .andExpect(jsonPath("$.hashtags[0]").value(HASHTAGS.get(0)))
+                .andExpect(jsonPath("$.hashtags[1]").value(HASHTAGS.get(1)))
                 .andReturn().getResponse().getContentAsString();
 
         String createdPostId = JsonPath.parse(responseBody).read("$.id", String.class);

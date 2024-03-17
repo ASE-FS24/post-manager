@@ -5,6 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
+//TODO Make it run only in dev or prod environment, else delete
 public class ApplicationStartupRunner implements CommandLineRunner {
 
     private final DynamoDBTableInitializer tableInitializer;
