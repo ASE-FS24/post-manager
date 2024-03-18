@@ -36,6 +36,6 @@ jobs:
           S3_KEY=postmanager.jar
           LAMBDA_FUNCTION_NAME=nexusnet-post-manager
           # Upload the updated jar to S3
-          aws s3 cp target/usermanager.jar s3://$S3_BUCKET/$S3_KEY
+          aws s3 cp target/postmanager.jar s3://$S3_BUCKET/$S3_KEY
           # Assuming your JAR file is in the target directory
           aws lambda update-function-code  --function-name $LAMBDA_FUNCTION_NAME --s3-bucket $S3_BUCKET --s3-key $S3_KEY
