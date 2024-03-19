@@ -4,6 +4,7 @@ import ch.nexusnet.postmanager.aws.dynamodb.model.mapper.DynamoPostToPostMapper;
 import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBPost;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBPostRepository;
 import ch.nexusnet.postmanager.model.Post;
+import ch.nexusnet.postmanager.model.PostStatus;
 import ch.nexusnet.postmanager.model.PostType;
 import ch.nexusnet.postmanager.model.dto.CreatePostDTO;
 import ch.nexusnet.postmanager.model.dto.UpdatePostDTO;
@@ -54,6 +55,7 @@ public class PostControllerIntegrationTests {
         DynamoDBPost dynamoDBPost = new DynamoDBPost();
         dynamoDBPost.setAuthorId(AUTHOR_ID);
         dynamoDBPost.setType(PostType.PROJECT.name());
+        dynamoDBPost.setStatus(PostStatus.NEW.name());
         dynamoDBPost.setTitle(TITLE);
         dynamoDBPost.setShortDescription(SHORT_DESCRIPTION);
         dynamoDBPost.setDescription(DESCRIPTION);
@@ -80,6 +82,7 @@ public class PostControllerIntegrationTests {
         CreatePostDTO createPostDTO = new CreatePostDTO();
         createPostDTO.setAuthorId(AUTHOR_ID);
         createPostDTO.setType(PostType.PROJECT);
+        createPostDTO.setStatus(PostStatus.NEW);
         createPostDTO.setImage(IMAGE);
         createPostDTO.setShortDescription(SHORT_DESCRIPTION);
         createPostDTO.setDescription(DESCRIPTION);
@@ -94,6 +97,7 @@ public class PostControllerIntegrationTests {
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.authorId").value(AUTHOR_ID))
                 .andExpect(jsonPath("$.type").value(PostType.PROJECT.name()))
+                .andExpect(jsonPath("$.status").value(PostStatus.NEW.name()))
                 .andExpect(jsonPath("$.image").value(IMAGE))
                 .andExpect(jsonPath("$.shortDescription").value(SHORT_DESCRIPTION))
                 .andExpect(jsonPath("$.description").value(DESCRIPTION))
@@ -177,6 +181,7 @@ public class PostControllerIntegrationTests {
                 .andExpect(jsonPath("$.title").value("New Title"))
                 .andExpect(jsonPath("$.image").value("New Image"))
                 .andExpect(jsonPath("$.type").value(PostType.POST.name()))
+                .andExpect(jsonPath("$.status").value(PostStatus.NEW.name()))
                 .andExpect(jsonPath("$.edited").value(true))
                 .andExpect(jsonPath("$.editedDateTime").exists())
         ;

@@ -24,6 +24,9 @@ public class DynamoDBPost {
     @DynamoDBAttribute(attributeName = "type")
     private String type;
 
+    @DynamoDBAttribute(attributeName = "status")
+    private String status;
+
     @DynamoDBAttribute(attributeName = "title")
     private String title;
 
