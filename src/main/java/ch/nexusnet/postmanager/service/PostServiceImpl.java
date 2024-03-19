@@ -87,6 +87,9 @@ public class PostServiceImpl implements PostService {
         if (postDetails.getType() != null) {
             post.setType(postDetails.getType().name());
         }
+        if (postDetails.getStatus() != null) {
+            post.setStatus(postDetails.getStatus().name());
+        }
         if (postDetails.getShortDescription() != null) {
             post.setShortDescription(postDetails.getShortDescription());
         }
