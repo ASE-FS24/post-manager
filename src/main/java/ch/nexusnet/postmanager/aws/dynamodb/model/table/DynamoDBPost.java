@@ -42,6 +42,9 @@ public class DynamoDBPost {
     @DynamoDBAttribute(attributeName = "likeNumber")
     private int likeNumber = 0;
 
+    @DynamoDBAttribute(attributeName = "commentNumber")
+    private int commentNumber = 0;
+
     @DynamoDBAttribute(attributeName = "hashtags")
     private List<String> hashtags = new ArrayList<>();
 

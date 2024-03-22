@@ -15,8 +15,12 @@ public class DynamoPostToPostMapper {
 
         post.setId(dynamoDBPost.getId());
         post.setAuthorId(dynamoDBPost.getAuthorId());
-        post.setType(PostType.valueOf(dynamoDBPost.getType()));
-        post.setStatus(PostStatus.valueOf(dynamoDBPost.getStatus()));
+        if (dynamoDBPost.getType() != null) {
+            post.setType(PostType.valueOf(dynamoDBPost.getType()));
+        }
+        if (dynamoDBPost.getStatus() != null) {
+            post.setStatus(PostStatus.valueOf(dynamoDBPost.getStatus()));
+        }
         post.setTitle(dynamoDBPost.getTitle());
         post.setImage(dynamoDBPost.getImage());
         post.setShortDescription(dynamoDBPost.getShortDescription());

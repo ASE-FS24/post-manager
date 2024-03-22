@@ -4,17 +4,19 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.*;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-//TODO Make it run only in dev or prod environment, else delete
+@Profile({"dev", "test"})
 public class DynamoDBTableInitializer {
 
     private final DynamoDBMapper dynamoDBMapper;
     private final AmazonDynamoDB amazonDynamoDB;
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     public DynamoDBTableInitializer(DynamoDBMapper dynamoDBMapper, AmazonDynamoDB amazonDynamoDB) {
         this.dynamoDBMapper = dynamoDBMapper;
         this.amazonDynamoDB = amazonDynamoDB;
@@ -22,19 +24,25 @@ public class DynamoDBTableInitializer {
 
     @PostConstruct
     public void init() {
+        createTable(DynamoDBPost.class, "Posts");
+        createTable(DynamoDBComment.class, "Comments");
+        createTable(DynamoDBLike.class, "Likes");
+    }
+
+    private void createTable(Class<?> clazz, String tableName) {
         CreateTableRequest tableRequest = dynamoDBMapper
-                .generateCreateTableRequest(DynamoDBPost.class)
+                .generateCreateTableRequest(clazz)
                 .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
 
         try {
             DescribeTableRequest describeTableRequest = new DescribeTableRequest()
-                    .withTableName("Posts");
+                    .withTableName(tableName);
             DescribeTableResult describeTableResult = amazonDynamoDB.describeTable(describeTableRequest);
 
-            System.out.println("Table already exists. Table status: " + describeTableResult.getTable().getTableStatus());
+            log.info("Table already exists. Table status: " + describeTableResult.getTable().getTableStatus());
         } catch (ResourceNotFoundException e) {
             amazonDynamoDB.createTable(tableRequest);
-            System.out.println("Created DynamoDB table: Posts");
+            log.info("Created DynamoDB table: " + tableName);
         }
     }
 }
