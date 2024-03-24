@@ -9,6 +9,7 @@ import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBPostRepository;
 import ch.nexusnet.postmanager.model.LikeTargetType;
 import ch.nexusnet.postmanager.model.PostStatus;
 import ch.nexusnet.postmanager.model.PostType;
+import ch.nexusnet.postmanager.service.IdGenerator;
 import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,6 +59,7 @@ class LikeControllerIntegrationTests {
         userId = UUID.randomUUID().toString();
 
         DynamoDBPost dynamoDBPost = new DynamoDBPost();
+        dynamoDBPost.setId(IdGenerator.generatePostId());
         dynamoDBPost.setAuthorId(userId);
         dynamoDBPost.setLikeNumber(1);
         dynamoDBPost.setType(PostType.PROJECT.name());
@@ -66,12 +68,14 @@ class LikeControllerIntegrationTests {
         postId = dynamoDBPost.getId();
 
         DynamoDBComment dynamoDBComment = new DynamoDBComment();
+        dynamoDBComment.setId(IdGenerator.generateCommentId());
         dynamoDBComment.setAuthorId(userId);
         dynamoDBComment.setPostId(postId);
         dynamoDBComment = dynamoDBCommentRepository.save(dynamoDBComment);
-        commentId = dynamoDBComment.getCommentId();
+        commentId = dynamoDBComment.getId();
 
         DynamoDBLike dynamoDBLike = new DynamoDBLike();
+        dynamoDBLike.setId(IdGenerator.generateLikeId());
         dynamoDBLike.setUserId(userId);
         dynamoDBLike.setTargetType(LikeTargetType.POST.name());
         dynamoDBLike.setTargetId(postId);

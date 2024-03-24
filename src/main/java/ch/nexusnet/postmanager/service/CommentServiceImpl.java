@@ -12,12 +12,8 @@ import com.amazonaws.services.dynamodbv2.model.AttributeAction;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.AttributeValueUpdate;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemRequest;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,17 +21,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements CommentService {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
     private final DynamoDBCommentRepository dynamoDBCommentRepository;
 
     private final AmazonDynamoDB amazonDynamoDB;
 
-    private final ZoneId appZoneId;
-
-    public CommentServiceImpl(DynamoDBCommentRepository dynamoDBCommentRepository, AmazonDynamoDB amazonDynamoDB, @Value("${app.timezone:CET}") ZoneId appZoneId) {
+    public CommentServiceImpl(DynamoDBCommentRepository dynamoDBCommentRepository, AmazonDynamoDB amazonDynamoDB) {
         this.dynamoDBCommentRepository = dynamoDBCommentRepository;
         this.amazonDynamoDB = amazonDynamoDB;
-        this.appZoneId = appZoneId;
     }
 
     /**
@@ -46,9 +38,9 @@ public class CommentServiceImpl implements CommentService {
      * @throws ResourceNotFoundException if the post with the specified postId is not found
      */
     @Override
-    @Transactional
     public Comment createComment(CreateCommentDTO createCommentDTO) {
         DynamoDBComment dynamoDBComment = CommentMapper.convertCreateCommentDTOToDynamoDBComment(createCommentDTO);
+        dynamoDBComment.setId(IdGenerator.generateCommentId());
 
         DynamoDBComment savedComment = dynamoDBCommentRepository.save(dynamoDBComment);
 
@@ -86,7 +78,6 @@ public class CommentServiceImpl implements CommentService {
      * @return the updated Comment object
      */
     @Override
-    @Transactional
     public Comment updateComment(String commentId, UpdateCommentDTO comment) {
         DynamoDBComment existingComment = findDynamoDBCommentById(commentId);
         existingComment.setContent(comment.getContent());
@@ -94,18 +85,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     * Deletes the comment with the specified commentId. This method performs the following operations:
-     * 1. Find the DynamoDBComment object by commentId using the findDynamoDBCommentById method.
-     * 2. Find the corresponding DynamoDBPost object by postId from the DynamoDBComment object.
-     * 3. Decrease the commentNumber of the DynamoDBPost object using the decreaseCommentNumber method.
-     * 4. Save the updated DynamoDBPost object.
-     * 5. Delete the DynamoDBComment object by commentId using the dynamoDBCommentRepository.
+     * Deletes a comment with the specified commentId.
      *
      * @param commentId the ID of the comment to delete
-     * @throws ResourceNotFoundException if the comment with the specified commentId is not found
      */
     @Override
-    @Transactional
     public void deleteComment(String commentId) {
         DynamoDBComment dynamoDBComment = findDynamoDBCommentById(commentId);
         dynamoDBCommentRepository.deleteById(commentId);

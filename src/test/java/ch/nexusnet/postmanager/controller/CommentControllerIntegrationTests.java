@@ -6,6 +6,7 @@ import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBCommentReposito
 import ch.nexusnet.postmanager.model.Comment;
 import ch.nexusnet.postmanager.model.dto.CreateCommentDTO;
 import ch.nexusnet.postmanager.model.dto.UpdateCommentDTO;
+import ch.nexusnet.postmanager.service.IdGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,11 +42,12 @@ public class CommentControllerIntegrationTests {
 
     @BeforeEach
     public void setup() {
-        postId = UUID.randomUUID().toString();
+        postId = IdGenerator.generatePostId();
         authorId = UUID.randomUUID().toString();
 
         DynamoDBComment dynamoDBComment = new DynamoDBComment();
         dynamoDBComment.setPostId(postId);
+        dynamoDBComment.setId(IdGenerator.generateCommentId());
         dynamoDBComment.setAuthorId(authorId);
         dynamoDBComment.setContent(CONTENT);
 

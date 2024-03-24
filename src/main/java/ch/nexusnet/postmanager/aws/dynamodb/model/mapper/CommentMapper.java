@@ -14,7 +14,7 @@ public class CommentMapper {
             return null;
         }
         Comment comment = new Comment();
-        comment.setId(dynamoDBComment.getCommentId());
+        comment.setId(dynamoDBComment.getId());
         comment.setPostId(dynamoDBComment.getPostId());
         comment.setAuthorId(dynamoDBComment.getAuthorId());
         comment.setContent(dynamoDBComment.getContent());

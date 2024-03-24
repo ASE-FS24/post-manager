@@ -24,25 +24,25 @@ public class DynamoDBTableInitializer {
 
     @PostConstruct
     public void init() {
-        createTable(DynamoDBPost.class, "Posts");
-        createTable(DynamoDBComment.class, "Comments");
-        createTable(DynamoDBLike.class, "Likes");
+        createTable(DynamoDBPost.class);
+        createTable(DynamoDBComment.class);
+        createTable(DynamoDBLike.class);
     }
 
-    private void createTable(Class<?> clazz, String tableName) {
+    private void createTable(Class<?> clazz) {
         CreateTableRequest tableRequest = dynamoDBMapper
                 .generateCreateTableRequest(clazz)
                 .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
 
         try {
             DescribeTableRequest describeTableRequest = new DescribeTableRequest()
-                    .withTableName(tableName);
+                    .withTableName("Posts");
             DescribeTableResult describeTableResult = amazonDynamoDB.describeTable(describeTableRequest);
 
             log.info("Table already exists. Table status: " + describeTableResult.getTable().getTableStatus());
         } catch (ResourceNotFoundException e) {
             amazonDynamoDB.createTable(tableRequest);
-            log.info("Created DynamoDB table: " + tableName);
+            log.info("Created DynamoDB table: " + "Posts");
         }
     }
 }

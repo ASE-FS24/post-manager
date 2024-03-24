@@ -9,14 +9,14 @@ public class IdGenerator {
     }
 
     public static String generatePostId() {
-        return "POST#" + UUID.randomUUID();
+        return "POST-" + UUID.randomUUID();
     }
 
     public static String generateCommentId() {
-        return "COMMENT#" + UUID.randomUUID();
+        return "COMMENT-" + UUID.randomUUID();
     }
 
     public static String generateLikeId() {
-        return "LIKE#" + UUID.randomUUID();
+        return "LIKE-" + UUID.randomUUID();
     }
 }

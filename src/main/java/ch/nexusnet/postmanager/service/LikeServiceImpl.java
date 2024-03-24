@@ -48,7 +48,7 @@ public class LikeServiceImpl implements LikeService {
      */
     @Override
     public void likePost(String postId, String userId) {
-        changeLikeNumber(postId, LikeTargetType.POST, "1");
+        changeLikeNumber(postId, "1");
         createAndSaveLike(postId, LikeTargetType.POST, userId);
     }
 
@@ -60,7 +60,7 @@ public class LikeServiceImpl implements LikeService {
      */
     @Override
     public void unlikePost(String postId, String userId) {
-        changeLikeNumber(postId, LikeTargetType.POST, "-1");
+        changeLikeNumber(postId, "-1");
         dynamoDBLikeRepository.deleteByTargetIdAndTargetTypeAndUserId(postId, LikeTargetType.POST.name(), userId);
     }
 
@@ -72,7 +72,7 @@ public class LikeServiceImpl implements LikeService {
      */
     @Override
     public void likeComment(String commentId, String userId) {
-        changeLikeNumber(commentId, LikeTargetType.COMMENT, "1");
+        changeLikeNumber(commentId, "1");
         createAndSaveLike(commentId, LikeTargetType.COMMENT, userId);
     }
 
@@ -84,7 +84,7 @@ public class LikeServiceImpl implements LikeService {
      */
     @Override
     public void unlikeComment(String commentId, String userId) {
-        changeLikeNumber(commentId, LikeTargetType.COMMENT, "-1");
+        changeLikeNumber(commentId, "-1");
         dynamoDBLikeRepository.deleteByTargetIdAndTargetTypeAndUserId(commentId, LikeTargetType.COMMENT.name(), userId);
     }
 
@@ -144,6 +144,7 @@ public class LikeServiceImpl implements LikeService {
 
     private void createAndSaveLike(String postId, LikeTargetType post, String userId) {
         DynamoDBLike dynamoDBLike = new DynamoDBLike();
+        dynamoDBLike.setId(IdGenerator.generateLikeId());
         dynamoDBLike.setTargetId(postId);
         dynamoDBLike.setTargetType(post.name());
         dynamoDBLike.setUserId(userId);
@@ -156,10 +157,9 @@ public class LikeServiceImpl implements LikeService {
      * Uses a direct query on the DynamoDB to reduce read and write operations (such as when using repositories)
      *
      * @param targetId       the ID of the target (post or comment)
-     * @param likeTargetType the type of the target (post or comment)
      * @param changeValue    the value by which to change the like number (positive for increase, negative for decrease)
      */
-    private void changeLikeNumber(String targetId, LikeTargetType likeTargetType, String changeValue) {
+    private void changeLikeNumber(String targetId, String changeValue) {
         Map<String, AttributeValue> key = new HashMap<>();
         key.put("id", new AttributeValue().withS(targetId));
 
@@ -170,7 +170,7 @@ public class LikeServiceImpl implements LikeService {
                         .withValue(new AttributeValue().withN(changeValue)));
 
         UpdateItemRequest updateItemRequest = new UpdateItemRequest()
-                .withTableName(likeTargetType.getTableName())
+                .withTableName("Posts")
                 .withKey(key)
                 .withAttributeUpdates(attributeUpdates);
 
