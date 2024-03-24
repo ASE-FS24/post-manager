@@ -1,7 +1,6 @@
 package ch.nexusnet.postmanager.service;
 
 import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBComment;
-import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBPost;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBCommentRepository;
 import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Comment;
@@ -12,12 +11,10 @@ import com.amazonaws.services.dynamodbv2.model.UpdateItemRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,10 +26,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class CommentServiceImplTest {
 
-    private final static String POST_ID = UUID.randomUUID().toString();
+    private final static String POST_ID = IdGenerator.generatePostId();
     private final static String AUTHOR_ID = UUID.randomUUID().toString();
-    private final static String COMMENT_ID = UUID.randomUUID().toString();
-    private final ZoneId appZoneId = ZoneId.of("CET");
+    private final static String COMMENT_ID = IdGenerator.generateCommentId();
     @Mock
     private DynamoDBCommentRepository dynamoDBCommentRepository;
     @Mock
@@ -41,42 +37,31 @@ public class CommentServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        commentService = new CommentServiceImpl(dynamoDBCommentRepository, amazonDynamoDB, appZoneId);
+        commentService = new CommentServiceImpl(dynamoDBCommentRepository, amazonDynamoDB);
     }
 
     @Test
-    void shouldCreateComment() {
-        CreateCommentDTO createCommentDTO = new CreateCommentDTO();
-        createCommentDTO.setAuthorId(AUTHOR_ID);
-        createCommentDTO.setPostId(POST_ID);
-        createCommentDTO.setContent("Content");
+    void createComment() {
+        CreateCommentDTO commentDTO = new CreateCommentDTO();
+        commentDTO.setContent("Test Comment");
+        commentDTO.setPostId(POST_ID);
+        commentDTO.setAuthorId(AUTHOR_ID);
 
-        DynamoDBComment dbComment = new DynamoDBComment();
-        dbComment.setCommentId(COMMENT_ID);
-        dbComment.setAuthorId(createCommentDTO.getAuthorId());
-        dbComment.setPostId(createCommentDTO.getPostId());
-        dbComment.setContent(createCommentDTO.getContent());
+        DynamoDBComment dynamoDBComment = new DynamoDBComment();
+        dynamoDBComment.setContent("Test Comment");
+        dynamoDBComment.setId(COMMENT_ID);
+        dynamoDBComment.setPostId(POST_ID);
+        dynamoDBComment.setAuthorId(AUTHOR_ID);
 
-        ArgumentCaptor<DynamoDBComment> captor = ArgumentCaptor.forClass(DynamoDBComment.class);
+        Mockito.when(dynamoDBCommentRepository.save(Mockito.any(DynamoDBComment.class))).thenReturn(dynamoDBComment);
 
-        DynamoDBPost dynamoDBPost = mock(DynamoDBPost.class);
+        Comment result = commentService.createComment(commentDTO);
 
-        Mockito.when(dynamoDBCommentRepository.save(any(DynamoDBComment.class))).thenReturn(dbComment);
-
-        Comment actualComment = commentService.createComment(createCommentDTO);
-
-        Mockito.verify(dynamoDBCommentRepository).save(captor.capture());
-        Mockito.verify(amazonDynamoDB).updateItem(any(UpdateItemRequest.class));
-
-        DynamoDBComment captorValue = captor.getValue();
-        assertEquals(createCommentDTO.getAuthorId(), captorValue.getAuthorId());
-        assertEquals(createCommentDTO.getPostId(), captorValue.getPostId());
-        assertEquals(createCommentDTO.getContent(), captorValue.getContent());
-
-        assertEquals(dbComment.getCommentId(), actualComment.getId());
-        assertEquals(createCommentDTO.getAuthorId(), actualComment.getAuthorId());
-        assertEquals(createCommentDTO.getContent(), actualComment.getContent());
-        assertEquals(createCommentDTO.getPostId(), actualComment.getPostId());
+        assertEquals(commentDTO.getContent(), result.getContent());
+        assertEquals(commentDTO.getPostId(), result.getPostId());
+        assertEquals(commentDTO.getAuthorId(), result.getAuthorId());
+        Mockito.verify(dynamoDBCommentRepository).save(Mockito.any(DynamoDBComment.class));
+        Mockito.verify(amazonDynamoDB).updateItem(Mockito.any(UpdateItemRequest.class));
     }
 
     @Test
@@ -126,32 +111,39 @@ public class CommentServiceImplTest {
     }
 
     @Test
-    void shouldUpdateComment() {
-        UpdateCommentDTO updateCommentDTO = new UpdateCommentDTO();
-        updateCommentDTO.setContent("Updated Content");
-
-        DynamoDBComment dbComment = new DynamoDBComment();
-        dbComment.setCommentId(COMMENT_ID);
-        dbComment.setContent("Old Content");
+    public void testUpdateComment() {
+        DynamoDBComment existingComment = new DynamoDBComment();
+        existingComment.setId(COMMENT_ID);
+        existingComment.setContent("Initial Content");
 
         DynamoDBComment updatedComment = new DynamoDBComment();
-        updatedComment.setCommentId(COMMENT_ID);
-        updatedComment.setContent(updateCommentDTO.getContent());
+        updatedComment.setId(COMMENT_ID);
+        updatedComment.setContent("Updated Content");
 
-        when(dynamoDBCommentRepository.findById(eq(COMMENT_ID))).thenReturn(Optional.of(dbComment));
-        when(dynamoDBCommentRepository.save(any(DynamoDBComment.class))).thenReturn(updatedComment);
+        UpdateCommentDTO updateCommentDto = new UpdateCommentDTO();
+        updateCommentDto.setContent("Updated Content");
 
-        Comment actualComment = commentService.updateComment(COMMENT_ID, updateCommentDTO);
+        Mockito.when(dynamoDBCommentRepository.findById(COMMENT_ID)).thenReturn(Optional.of(existingComment));
+        Mockito.when(dynamoDBCommentRepository.save(any(DynamoDBComment.class))).thenReturn(updatedComment);
 
-        assertEquals(updateCommentDTO.getContent(), actualComment.getContent());
+        CommentServiceImpl commentService = new CommentServiceImpl(dynamoDBCommentRepository, amazonDynamoDB);
+
+        Comment result = commentService.updateComment(COMMENT_ID, updateCommentDto);
+
+        assertEquals("Updated Content", result.getContent());
+        assertEquals(COMMENT_ID, result.getId());
     }
 
     @Test
-    void shouldNotUpdateCommentDueToNoComment() {
-        Mockito.when(dynamoDBCommentRepository.findById(eq(COMMENT_ID))).thenReturn(Optional.empty());
+    public void testUpdateCommentNotFound() {
+        UpdateCommentDTO updateCommentDto = new UpdateCommentDTO();
+        updateCommentDto.setContent("Updated Content");
 
-        assertThrows(ResourceNotFoundException.class, () -> commentService.updateComment(COMMENT_ID, new UpdateCommentDTO()));
+        Mockito.when(dynamoDBCommentRepository.findById(COMMENT_ID)).thenReturn(Optional.empty());
 
+        CommentServiceImpl commentService = new CommentServiceImpl(dynamoDBCommentRepository, amazonDynamoDB);
+
+        assertThrows(ResourceNotFoundException.class, () -> commentService.updateComment(COMMENT_ID, updateCommentDto));
     }
 
     @Test

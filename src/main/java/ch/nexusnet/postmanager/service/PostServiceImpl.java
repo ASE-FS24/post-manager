@@ -34,6 +34,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post createPost(CreatePostDTO createPostDTO) {
         DynamoDBPost dynamoDBPost = PostToDynamoPostMapper.createPostMap(createPostDTO);
+        dynamoDBPost.setId(IdGenerator.generatePostId());
         dynamoDBPost.setCreatedDateTime(FORMATTER.format(LocalDateTime.now(appZoneId)));
         dynamoDBPost = dynamoDBPostRepository.save(dynamoDBPost);
         return DynamoPostToPostMapper.map(dynamoDBPost);
