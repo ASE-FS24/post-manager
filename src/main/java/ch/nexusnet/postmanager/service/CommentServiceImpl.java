@@ -3,6 +3,7 @@ package ch.nexusnet.postmanager.service;
 import ch.nexusnet.postmanager.aws.dynamodb.model.mapper.CommentMapper;
 import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBComment;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBCommentRepository;
+import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBLikeRepository;
 import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Comment;
 import ch.nexusnet.postmanager.model.dto.CreateCommentDTO;
@@ -23,10 +24,12 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
     private final DynamoDBCommentRepository dynamoDBCommentRepository;
 
+    private final DynamoDBLikeRepository dynamoDBLikeRepository;
     private final AmazonDynamoDB amazonDynamoDB;
 
-    public CommentServiceImpl(DynamoDBCommentRepository dynamoDBCommentRepository, AmazonDynamoDB amazonDynamoDB) {
+    public CommentServiceImpl(DynamoDBCommentRepository dynamoDBCommentRepository, DynamoDBLikeRepository dynamoDBLikeRepository, AmazonDynamoDB amazonDynamoDB) {
         this.dynamoDBCommentRepository = dynamoDBCommentRepository;
+        this.dynamoDBLikeRepository = dynamoDBLikeRepository;
         this.amazonDynamoDB = amazonDynamoDB;
     }
 
@@ -94,6 +97,7 @@ public class CommentServiceImpl implements CommentService {
         DynamoDBComment dynamoDBComment = findDynamoDBCommentById(commentId);
         dynamoDBCommentRepository.deleteById(commentId);
         changePostsCommentNumber(dynamoDBComment.getPostId(), -1);
+        dynamoDBLikeRepository.deleteAllByTargetId(commentId);
     }
 
     private List<Comment> mapDynamoDBCommentsToComments(List<DynamoDBComment> dynamoDBComments) {

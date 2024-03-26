@@ -8,6 +8,7 @@ import java.util.List;
 
 @EnableScan
 public interface DynamoDBCommentRepository extends CrudRepository<DynamoDBComment, String> {
+    void deleteAllByPostId(String postId);
     List<DynamoDBComment> findByPostId(String postId);
 
     List<DynamoDBComment> findByAuthorId(String authorId);

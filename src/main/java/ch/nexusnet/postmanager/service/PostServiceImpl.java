@@ -3,6 +3,8 @@ package ch.nexusnet.postmanager.service;
 import ch.nexusnet.postmanager.aws.dynamodb.model.mapper.DynamoPostToPostMapper;
 import ch.nexusnet.postmanager.aws.dynamodb.model.mapper.PostToDynamoPostMapper;
 import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBPost;
+import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBCommentRepository;
+import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBLikeRepository;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBPostRepository;
 import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Post;
@@ -24,10 +26,16 @@ public class PostServiceImpl implements PostService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
     private final DynamoDBPostRepository dynamoDBPostRepository;
+
+    private final DynamoDBLikeRepository dynamoDBLikeRepository;
+
+    private final DynamoDBCommentRepository dynamoDBCommentRepository;
     private final ZoneId appZoneId;
 
-    public PostServiceImpl(DynamoDBPostRepository dynamoDBPostRepository, @Value("${app.timezone:CET}") ZoneId appZoneId) {
+    public PostServiceImpl(DynamoDBPostRepository dynamoDBPostRepository, DynamoDBLikeRepository dynamoDBLikeRepository, DynamoDBCommentRepository dynamoDBCommentRepository, @Value("${app.timezone:CET}") ZoneId appZoneId) {
         this.dynamoDBPostRepository = dynamoDBPostRepository;
+        this.dynamoDBLikeRepository = dynamoDBLikeRepository;
+        this.dynamoDBCommentRepository = dynamoDBCommentRepository;
         this.appZoneId = appZoneId;
     }
 
@@ -78,6 +86,8 @@ public class PostServiceImpl implements PostService {
         dynamoDBPostRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
         dynamoDBPostRepository.deleteById(id);
+        dynamoDBLikeRepository.deleteAllByTargetId(id);
+        dynamoDBCommentRepository.deleteAllByPostId(id);
     }
 
 

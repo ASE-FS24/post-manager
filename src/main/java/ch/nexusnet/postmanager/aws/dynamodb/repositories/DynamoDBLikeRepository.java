@@ -10,6 +10,7 @@ import java.util.Optional;
 @EnableScan
 public interface DynamoDBLikeRepository extends CrudRepository<DynamoDBLike, String> {
 
+    void deleteAllByTargetId(String targetId);
     void deleteByTargetIdAndTargetTypeAndUserId(String targetId, String targetType, String userId);
 
     Optional<DynamoDBLike> findByTargetIdAndTargetTypeAndUserId(String targetId, String targetType, String userId);

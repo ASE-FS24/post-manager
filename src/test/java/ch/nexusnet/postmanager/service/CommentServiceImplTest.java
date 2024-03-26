@@ -2,6 +2,7 @@ package ch.nexusnet.postmanager.service;
 
 import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBComment;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBCommentRepository;
+import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBLikeRepository;
 import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Comment;
 import ch.nexusnet.postmanager.model.dto.CreateCommentDTO;
@@ -31,13 +32,17 @@ public class CommentServiceImplTest {
     private final static String COMMENT_ID = IdGenerator.generateCommentId();
     @Mock
     private DynamoDBCommentRepository dynamoDBCommentRepository;
+
+    @Mock
+    private DynamoDBLikeRepository dynamoDBLikeRepository;
+
     @Mock
     private AmazonDynamoDB amazonDynamoDB;
     private CommentServiceImpl commentService;
 
     @BeforeEach
     public void setUp() {
-        commentService = new CommentServiceImpl(dynamoDBCommentRepository, amazonDynamoDB);
+        commentService = new CommentServiceImpl(dynamoDBCommentRepository, dynamoDBLikeRepository, amazonDynamoDB);
     }
 
     @Test
@@ -126,8 +131,6 @@ public class CommentServiceImplTest {
         Mockito.when(dynamoDBCommentRepository.findById(COMMENT_ID)).thenReturn(Optional.of(existingComment));
         Mockito.when(dynamoDBCommentRepository.save(any(DynamoDBComment.class))).thenReturn(updatedComment);
 
-        CommentServiceImpl commentService = new CommentServiceImpl(dynamoDBCommentRepository, amazonDynamoDB);
-
         Comment result = commentService.updateComment(COMMENT_ID, updateCommentDto);
 
         assertEquals("Updated Content", result.getContent());
@@ -140,8 +143,6 @@ public class CommentServiceImplTest {
         updateCommentDto.setContent("Updated Content");
 
         Mockito.when(dynamoDBCommentRepository.findById(COMMENT_ID)).thenReturn(Optional.empty());
-
-        CommentServiceImpl commentService = new CommentServiceImpl(dynamoDBCommentRepository, amazonDynamoDB);
 
         assertThrows(ResourceNotFoundException.class, () -> commentService.updateComment(COMMENT_ID, updateCommentDto));
     }
