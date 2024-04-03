@@ -8,6 +8,7 @@ import ch.nexusnet.postmanager.model.PostStatus;
 import ch.nexusnet.postmanager.model.PostType;
 import ch.nexusnet.postmanager.model.dto.CreatePostDTO;
 import ch.nexusnet.postmanager.model.dto.UpdatePostDTO;
+import ch.nexusnet.postmanager.service.IdGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.AfterEach;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -30,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class PostControllerIntegrationTests {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
@@ -53,6 +56,7 @@ public class PostControllerIntegrationTests {
     @BeforeEach
     public void setup() {
         DynamoDBPost dynamoDBPost = new DynamoDBPost();
+        dynamoDBPost.setId(IdGenerator.generatePostId());
         dynamoDBPost.setAuthorId(AUTHOR_ID);
         dynamoDBPost.setType(PostType.PROJECT.name());
         dynamoDBPost.setStatus(PostStatus.NEW.name());

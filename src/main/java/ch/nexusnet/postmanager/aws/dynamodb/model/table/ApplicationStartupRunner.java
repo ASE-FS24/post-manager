@@ -1,16 +1,15 @@
 package ch.nexusnet.postmanager.aws.dynamodb.model.table;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-//TODO Make it run only in dev or prod environment, else delete
+@Profile({"dev", "test"})
 public class ApplicationStartupRunner implements CommandLineRunner {
 
     private final DynamoDBTableInitializer tableInitializer;
 
-    @Autowired
     public ApplicationStartupRunner(DynamoDBTableInitializer tableInitializer) {
         this.tableInitializer = tableInitializer;
     }
