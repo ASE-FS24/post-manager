@@ -55,4 +55,10 @@ public class DynamoDBPost {
     @DynamoDBAttribute(attributeName = "editedDateTime")
     private String editedDateTime;
 
+    @DynamoDBAttribute(attributeName = "fileUrls")
+    private List<String> fileUrls = new ArrayList<>();
+
+    public void addFileUrl(String fileUrl) {
+        fileUrls.add(fileUrl);
+    }
 }

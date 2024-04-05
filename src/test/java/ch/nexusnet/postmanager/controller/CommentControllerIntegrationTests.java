@@ -6,7 +6,7 @@ import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBCommentReposito
 import ch.nexusnet.postmanager.model.Comment;
 import ch.nexusnet.postmanager.model.dto.CreateCommentDTO;
 import ch.nexusnet.postmanager.model.dto.UpdateCommentDTO;
-import ch.nexusnet.postmanager.service.IdGenerator;
+import ch.nexusnet.postmanager.util.IdGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

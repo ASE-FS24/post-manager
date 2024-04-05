@@ -39,4 +39,6 @@ public class Post {
     private boolean edited = false;
 
     private LocalDateTime editedDateTime;
+
+    private List<String> fileUrls;
 }

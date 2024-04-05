@@ -10,6 +10,7 @@ import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Post;
 import ch.nexusnet.postmanager.model.dto.CreatePostDTO;
 import ch.nexusnet.postmanager.model.dto.UpdatePostDTO;
+import ch.nexusnet.postmanager.util.IdGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

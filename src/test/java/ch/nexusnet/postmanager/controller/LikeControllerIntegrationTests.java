@@ -9,7 +9,7 @@ import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBPostRepository;
 import ch.nexusnet.postmanager.model.LikeTargetType;
 import ch.nexusnet.postmanager.model.PostStatus;
 import ch.nexusnet.postmanager.model.PostType;
-import ch.nexusnet.postmanager.service.IdGenerator;
+import ch.nexusnet.postmanager.util.IdGenerator;
 import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

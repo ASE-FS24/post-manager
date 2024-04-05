@@ -27,6 +27,7 @@ public class DynamoPostToPostMapper {
         post.setDescription(dynamoDBPost.getDescription());
         post.setLikeNumber(dynamoDBPost.getLikeNumber());
         post.setHashtags(dynamoDBPost.getHashtags());
+        post.setFileUrls(dynamoDBPost.getFileUrls());
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         if (dynamoDBPost.getCreatedDateTime() != null && !dynamoDBPost.getCreatedDateTime().isEmpty()) {

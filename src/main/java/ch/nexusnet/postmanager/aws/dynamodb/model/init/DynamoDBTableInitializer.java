@@ -1,5 +1,8 @@
-package ch.nexusnet.postmanager.aws.dynamodb.model.table;
+package ch.nexusnet.postmanager.aws.dynamodb.model.init;
 
+import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBComment;
+import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBLike;
+import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBPost;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.*;

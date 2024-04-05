@@ -7,6 +7,7 @@ import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBLikeRepository;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBPostRepository;
 import ch.nexusnet.postmanager.model.LikeTargetType;
 import ch.nexusnet.postmanager.model.Post;
+import ch.nexusnet.postmanager.util.IdGenerator;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeAction;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
