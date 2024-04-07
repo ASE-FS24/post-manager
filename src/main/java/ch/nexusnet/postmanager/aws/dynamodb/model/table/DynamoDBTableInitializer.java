@@ -6,11 +6,10 @@ import com.amazonaws.services.dynamodbv2.model.*;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile({"dev", "test"})
+//@Profile({"dev", "test"}) TODO Reenable this line when the init-dynamodb-localstack.sh works
 public class DynamoDBTableInitializer {
 
     private final DynamoDBMapper dynamoDBMapper;
