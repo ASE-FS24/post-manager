@@ -20,6 +20,8 @@ public class Post {
 
     private PostType type;
 
+    private PostStatus status;
+
     private String title;
 
     private String image;

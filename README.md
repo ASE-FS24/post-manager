@@ -6,7 +6,7 @@ This app handles post management
 1. Start up docker-compose-localstack.yml
 2. Publish the ports using:
    docker run -p 4566:4566 localstack/localstack
-3. Start the application by running PostManagerApplication
+3. Start the application by running PostManagerApplication with the dev profile
 
 # Running Integration Tests
 

@@ -2,6 +2,7 @@ package ch.nexusnet.postmanager.aws.dynamodb.model.mapper;
 
 import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBPost;
 import ch.nexusnet.postmanager.model.Post;
+import ch.nexusnet.postmanager.model.PostStatus;
 import ch.nexusnet.postmanager.model.PostType;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,12 @@ public class DynamoPostToPostMapper {
 
         post.setId(dynamoDBPost.getId());
         post.setAuthorId(dynamoDBPost.getAuthorId());
-        post.setType(PostType.valueOf(dynamoDBPost.getType()));
+        if (dynamoDBPost.getType() != null) {
+            post.setType(PostType.valueOf(dynamoDBPost.getType()));
+        }
+        if (dynamoDBPost.getStatus() != null) {
+            post.setStatus(PostStatus.valueOf(dynamoDBPost.getStatus()));
+        }
         post.setTitle(dynamoDBPost.getTitle());
         post.setImage(dynamoDBPost.getImage());
         post.setShortDescription(dynamoDBPost.getShortDescription());

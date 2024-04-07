@@ -1,6 +1,8 @@
 package ch.nexusnet.postmanager.service;
 
 import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBPost;
+import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBCommentRepository;
+import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBLikeRepository;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBPostRepository;
 import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Post;
@@ -32,6 +34,10 @@ class PostServiceImplTest {
     ArgumentCaptor<DynamoDBPost> dynamoDBPostCaptor;
     @Mock
     private DynamoDBPostRepository dynamoDBPostRepository;
+    @Mock
+    private DynamoDBCommentRepository dynamoDBCommentRepository;
+    @Mock
+    private DynamoDBLikeRepository dynamoDBLikeRepository;
     private PostServiceImpl postService;
     private CreatePostDTO sampleCreatePostDTO;
     private UpdatePostDTO sampleUpdatePostDTO;
@@ -39,7 +45,7 @@ class PostServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        postService = new PostServiceImpl(dynamoDBPostRepository, ZoneId.of("CET"));
+        postService = new PostServiceImpl(dynamoDBPostRepository, dynamoDBLikeRepository, dynamoDBCommentRepository, ZoneId.of("CET"));
         sampleCreatePostDTO = TestDataUtils.createSampleCreatePostDTO();
         sampleUpdatePostDTO = TestDataUtils.createSampleUpdatePostDTO();
         sampleDynamoDBPost = TestDataUtils.createSampleDynamoDBPost();
@@ -59,6 +65,7 @@ class PostServiceImplTest {
 
         assertEquals(TestDataUtils.DEFAULT_AUTHOR_ID, savedDynamoDBPost.getAuthorId());
         assertEquals(TestDataUtils.DEFAULT_POST_TYPE.name(), savedDynamoDBPost.getType());
+        assertEquals(TestDataUtils.DEFAULT_POST_STATUS.name(), savedDynamoDBPost.getStatus());
         assertEquals(TestDataUtils.DEFAULT_TITLE, savedDynamoDBPost.getTitle());
         assertEquals(TestDataUtils.DEFAULT_IMAGE, savedDynamoDBPost.getImage());
         assertEquals(TestDataUtils.DEFAULT_SHORT_DESCRIPTION, savedDynamoDBPost.getShortDescription());
@@ -72,6 +79,7 @@ class PostServiceImplTest {
         assertNotNull(resultPost.getId());
         assertEquals(TestDataUtils.DEFAULT_AUTHOR_ID, resultPost.getAuthorId());
         assertEquals(TestDataUtils.DEFAULT_POST_TYPE, resultPost.getType());
+        assertEquals(TestDataUtils.DEFAULT_POST_STATUS, resultPost.getStatus());
         assertEquals(TestDataUtils.DEFAULT_TITLE, resultPost.getTitle());
         assertEquals(TestDataUtils.DEFAULT_IMAGE, resultPost.getImage());
         assertEquals(TestDataUtils.DEFAULT_SHORT_DESCRIPTION, resultPost.getShortDescription());
@@ -137,6 +145,7 @@ class PostServiceImplTest {
 
         assertEquals(TestDataUtils.DEFAULT_AUTHOR_ID, savedDynamoDBPost.getAuthorId());
         assertEquals(TestDataUtils.UPDATED_POST_TYPE.name(), savedDynamoDBPost.getType());
+        assertEquals(TestDataUtils.UPDATED_POST_STATUS.name(), savedDynamoDBPost.getStatus());
         assertEquals(TestDataUtils.UPDATED_TITLE, savedDynamoDBPost.getTitle());
         assertEquals(TestDataUtils.UPDATED_IMAGE, savedDynamoDBPost.getImage());
         assertEquals(TestDataUtils.UPDATED_SHORT_DESCRIPTION, savedDynamoDBPost.getShortDescription());

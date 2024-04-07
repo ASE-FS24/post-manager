@@ -10,6 +10,7 @@ public class PostToDynamoPostMapper {
 
         dynamoDBPost.setAuthorId(post.getAuthorId());
         dynamoDBPost.setType(post.getType().name());
+        dynamoDBPost.setStatus(post.getStatus().name());
         dynamoDBPost.setTitle(post.getTitle());
         dynamoDBPost.setImage(post.getImage());
         dynamoDBPost.setShortDescription(post.getShortDescription());

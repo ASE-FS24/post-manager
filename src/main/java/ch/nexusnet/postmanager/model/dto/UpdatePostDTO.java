@@ -1,5 +1,6 @@
 package ch.nexusnet.postmanager.model.dto;
 
+import ch.nexusnet.postmanager.model.PostStatus;
 import ch.nexusnet.postmanager.model.PostType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +16,9 @@ public class UpdatePostDTO {
 
     @NotNull(message = "Post type cannot be null")
     private PostType type;
+
+    @NotNull(message = "Post status cannot be null")
+    private PostStatus status;
 
     @NotBlank(message = "Title cannot be blank")
     @Size(min = 1, max = 255, message = "Title must be between 1 and 255 characters")
