@@ -6,11 +6,13 @@ import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBPost;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBCommentRepository;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBLikeRepository;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBPostRepository;
+import ch.nexusnet.postmanager.aws.s3.config.S3ClientConfiguration;
 import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Post;
 import ch.nexusnet.postmanager.model.dto.CreatePostDTO;
 import ch.nexusnet.postmanager.model.dto.UpdatePostDTO;
 import ch.nexusnet.postmanager.util.IdGenerator;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -26,18 +28,23 @@ import java.util.stream.StreamSupport;
 public class PostServiceImpl implements PostService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
+
     private final DynamoDBPostRepository dynamoDBPostRepository;
 
     private final DynamoDBLikeRepository dynamoDBLikeRepository;
 
     private final DynamoDBCommentRepository dynamoDBCommentRepository;
+
     private final ZoneId appZoneId;
 
-    public PostServiceImpl(DynamoDBPostRepository dynamoDBPostRepository, DynamoDBLikeRepository dynamoDBLikeRepository, DynamoDBCommentRepository dynamoDBCommentRepository, @Value("${app.timezone:CET}") ZoneId appZoneId) {
+    private final S3ClientConfiguration s3ClientConfig;
+
+    public PostServiceImpl(DynamoDBPostRepository dynamoDBPostRepository, DynamoDBLikeRepository dynamoDBLikeRepository, DynamoDBCommentRepository dynamoDBCommentRepository, @Value("${app.timezone:CET}") ZoneId appZoneId, S3ClientConfiguration s3ClientConfig) {
         this.dynamoDBPostRepository = dynamoDBPostRepository;
         this.dynamoDBLikeRepository = dynamoDBLikeRepository;
         this.dynamoDBCommentRepository = dynamoDBCommentRepository;
         this.appZoneId = appZoneId;
+        this.s3ClientConfig = s3ClientConfig;
     }
 
     @Override
@@ -84,13 +91,26 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(String id) {
-        dynamoDBPostRepository.findById(id)
+        DynamoDBPost dynamoDBPost = dynamoDBPostRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
+        if (dynamoDBPost.getFileUrls() != null && !dynamoDBPost.getFileUrls().isEmpty()) {
+            deleteFilesAssociatedWithPost(dynamoDBPost.getFileUrls());
+        }
         dynamoDBPostRepository.deleteById(id);
         dynamoDBLikeRepository.deleteAllByTargetId(id);
         dynamoDBCommentRepository.deleteAllByPostId(id);
     }
 
+    private void deleteFilesAssociatedWithPost(List<String> fileUrls) {
+        List<DeleteObjectsRequest.KeyVersion> keysToDelete = fileUrls.stream()
+                .map(DeleteObjectsRequest.KeyVersion::new)
+                .collect(Collectors.toList());
+
+        DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(s3ClientConfig.getBucketName())
+                .withKeys(keysToDelete);
+
+        s3ClientConfig.getS3client().deleteObjects(deleteObjectsRequest);
+    }
 
     private void updatePostFields(DynamoDBPost post, UpdatePostDTO postDetails) {
         if (postDetails.getDescription() != null) {

@@ -4,6 +4,7 @@ import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBPost;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBCommentRepository;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBLikeRepository;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBPostRepository;
+import ch.nexusnet.postmanager.aws.s3.config.S3ClientConfiguration;
 import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Post;
 import ch.nexusnet.postmanager.model.dto.CreatePostDTO;
@@ -38,6 +39,9 @@ class PostServiceImplTest {
     private DynamoDBCommentRepository dynamoDBCommentRepository;
     @Mock
     private DynamoDBLikeRepository dynamoDBLikeRepository;
+    @Mock
+    private S3ClientConfiguration s3ClientConfig;
+
     private PostServiceImpl postService;
     private CreatePostDTO sampleCreatePostDTO;
     private UpdatePostDTO sampleUpdatePostDTO;
@@ -45,7 +49,7 @@ class PostServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        postService = new PostServiceImpl(dynamoDBPostRepository, dynamoDBLikeRepository, dynamoDBCommentRepository, ZoneId.of("CET"));
+        postService = new PostServiceImpl(dynamoDBPostRepository, dynamoDBLikeRepository, dynamoDBCommentRepository, ZoneId.of("CET"), s3ClientConfig);
         sampleCreatePostDTO = TestDataUtils.createSampleCreatePostDTO();
         sampleUpdatePostDTO = TestDataUtils.createSampleUpdatePostDTO();
         sampleDynamoDBPost = TestDataUtils.createSampleDynamoDBPost();

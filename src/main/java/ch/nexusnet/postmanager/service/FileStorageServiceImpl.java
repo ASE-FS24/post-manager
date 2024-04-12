@@ -7,6 +7,7 @@ import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.util.FileValidationUtil;
 import ch.nexusnet.postmanager.util.IdGenerator;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,16 @@ public class FileStorageServiceImpl implements FileStorageService {
         post.addFileUrl(url.toString());
         dynamoDBPostRepository.save(post);
         return url.toString();
+    }
+
+    /**
+     * Deletes a file from the storage.
+     *
+     * @param fileKey the key of the file to be deleted
+     */
+    @Override
+    public void deleteFile(String fileKey) {
+        s3ClientConfiguration.getS3client().deleteObject(new DeleteObjectRequest(bucketName, fileKey));
     }
 
     private URL uploadFileToS3(String postId, MultipartFile multipartFile) throws IOException {

@@ -17,11 +17,14 @@ public class S3ClientConfiguration {
 
     private static final Regions region = Regions.EU_CENTRAL_2;
     @Value("${amazon.s3.endpoint}")
-    String serviceEndpoint;
+    private String serviceEndpoint;
     @Value("${amazon.aws.s3.accesskey}")
     private String accessKey;
     @Value("${amazon.aws.s3.secretkey}")
     private String secretKey;
+    @Value("${postmanager.aws.s3.bucket}")
+    @Getter
+    private String bucketName;
     @Getter
     private AmazonS3 s3client;
 
