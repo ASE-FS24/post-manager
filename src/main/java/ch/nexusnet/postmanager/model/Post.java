@@ -32,6 +32,8 @@ public class Post {
 
     private int likeNumber;
 
+    private int commentNumber;
+
     private List<String> hashtags;
 
     private LocalDateTime createdDateTime;
