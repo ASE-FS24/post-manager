@@ -50,7 +50,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> findAllPosts() {
-        return StreamSupport.stream(dynamoDBPostRepository.findAll().spliterator(), false)
+        return StreamSupport.stream(dynamoDBPostRepository.findDynamoDBPostsByIdStartingWith("POST").spliterator(), false)
                 .map(DynamoPostToPostMapper::map)
                 .collect(Collectors.toList());
     }
