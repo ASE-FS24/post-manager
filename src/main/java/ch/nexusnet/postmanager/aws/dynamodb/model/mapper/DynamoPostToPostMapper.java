@@ -23,6 +23,7 @@ public class DynamoPostToPostMapper {
         post.setShortDescription(dynamoDBPost.getShortDescription());
         post.setDescription(dynamoDBPost.getDescription());
         post.setLikeNumber(dynamoDBPost.getLikeNumber());
+        post.setCommentNumber(dynamoDBPost.getCommentNumber());
         post.setHashtags(dynamoDBPost.getHashtags());
 
         if (dynamoDBPost.getCreatedDateTime() != null && !dynamoDBPost.getCreatedDateTime().isEmpty()) {

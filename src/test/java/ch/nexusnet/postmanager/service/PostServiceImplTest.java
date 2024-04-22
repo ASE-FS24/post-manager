@@ -94,7 +94,7 @@ class PostServiceImplTest {
     @Test
     void findAllPosts_Success() {
         List<DynamoDBPost> dbPosts = Arrays.asList(sampleDynamoDBPost, sampleDynamoDBPost);
-        given(dynamoDBPostRepository.findAll()).willReturn(dbPosts);
+        given(dynamoDBPostRepository.findDynamoDBPostsByIdStartingWith("POST")).willReturn(dbPosts);
 
         List<Post> posts = postService.findAllPosts();
 

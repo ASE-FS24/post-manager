@@ -1,6 +1,7 @@
 package ch.nexusnet.postmanager.utils;
 
 import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBPost;
+import ch.nexusnet.postmanager.model.Comment;
 import ch.nexusnet.postmanager.model.Post;
 import ch.nexusnet.postmanager.model.PostStatus;
 import ch.nexusnet.postmanager.model.PostType;
@@ -122,4 +123,15 @@ public class TestDataUtils {
         post.setEditedDateTime(UPDATED_EDITED_DATE_TIME);
         return post;
     }
+
+    public static Comment createSampleComment(String postId) {
+        Comment comment = new Comment();
+        comment.setId(generateUniqueId());
+        comment.setAuthorId(DEFAULT_AUTHOR_ID);
+        comment.setPostId(postId);
+        comment.setContent("This is a comment.");
+        comment.setCreatedAt(LocalDateTime.parse(DEFAULT_CREATED_DATE_TIME, FORMATTER));
+        return comment;
+    }
+
 }
