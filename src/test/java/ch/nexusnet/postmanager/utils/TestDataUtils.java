@@ -99,7 +99,7 @@ public class TestDataUtils {
         post.setDescription(DEFAULT_DESCRIPTION);
         post.setLikeNumber(DEFAULT_LIKE_NUMBER);
         post.setHashtags(DEFAULT_HASHTAGS);
-        post.setCreatedDateTime(LocalDateTime.parse(DEFAULT_CREATED_DATE_TIME, FORMATTER));
+        post.setCreatedDateTime(DEFAULT_CREATED_DATE_TIME);
         post.setEdited(DEFAULT_EDITED);
         post.setEditedDateTime(null);
         return post;
@@ -117,9 +117,9 @@ public class TestDataUtils {
         post.setDescription(UPDATED_DESCRIPTION);
         post.setLikeNumber(DEFAULT_LIKE_NUMBER);
         post.setHashtags(UPDATED_HASHTAGS);
-        post.setCreatedDateTime(LocalDateTime.parse(DEFAULT_CREATED_DATE_TIME, FORMATTER));
+        post.setCreatedDateTime(DEFAULT_CREATED_DATE_TIME);
         post.setEdited(UPDATED_EDITED);
-        post.setEditedDateTime(LocalDateTime.parse(UPDATED_EDITED_DATE_TIME, FORMATTER));
+        post.setEditedDateTime(UPDATED_EDITED_DATE_TIME);
         return post;
     }
 }

@@ -6,7 +6,6 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -34,9 +33,9 @@ public class Post {
 
     private List<String> hashtags;
 
-    private LocalDateTime createdDateTime;
+    private String createdDateTime;
 
     private boolean edited = false;
 
-    private LocalDateTime editedDateTime;
+    private String editedDateTime;
 }

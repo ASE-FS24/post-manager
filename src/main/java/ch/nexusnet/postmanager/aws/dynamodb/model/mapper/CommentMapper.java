@@ -4,9 +4,6 @@ import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBComment;
 import ch.nexusnet.postmanager.model.Comment;
 import ch.nexusnet.postmanager.model.dto.CreateCommentDTO;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 public class CommentMapper {
 
     public static Comment convertDynamoDBCommentToComment(DynamoDBComment dynamoDBComment) {
@@ -20,7 +17,7 @@ public class CommentMapper {
         comment.setContent(dynamoDBComment.getContent());
         comment.setLikeNumber(dynamoDBComment.getLikeNumber());
         if (dynamoDBComment.getCreatedDateTime() != null && !dynamoDBComment.getCreatedDateTime().isEmpty()) {
-            comment.setCreatedAt(LocalDateTime.parse(dynamoDBComment.getCreatedDateTime(), DateTimeFormatter.ISO_DATE_TIME));
+            comment.setCreatedAt(dynamoDBComment.getCreatedDateTime());
         }
         return comment;
     }
