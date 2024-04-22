@@ -3,8 +3,6 @@ package ch.nexusnet.postmanager.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 public class Comment {
@@ -19,6 +17,6 @@ public class Comment {
 
     private int likeNumber;
 
-    private LocalDateTime createdAt;
+    private String createdAt;
 
 }

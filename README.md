@@ -18,9 +18,10 @@ This app handles post management
 # Running Integration Tests
 
 1. Start up docker-compose-localstack.yml
-2. Publish the ports using:
+2. Run init-dynamodb-localstack.sh
+3. Publish the ports using:
    docker run -p 4566:4566 localstack/localstack
-3. Run the tests
+4. Run the tests
 
 # Documentation
 
