@@ -103,7 +103,7 @@ class SystemTest {
                 .andExpect(jsonPath("$.hashtags[0]").value(TestDataUtils.DEFAULT_HASHTAGS.get(0)))
                 .andExpect(jsonPath("$.hashtags[1]").value(TestDataUtils.DEFAULT_HASHTAGS.get(1)));
 
-        mockMvc.perform(get("/posts/")).andExpect(status().isOk()).andExpect(jsonPath("$").isArray());
+        mockMvc.perform(get("/posts")).andExpect(status().isOk()).andExpect(jsonPath("$").isArray());
         mockMvc.perform(get("/posts/user/" + TestDataUtils.DEFAULT_AUTHOR_ID)).andExpect(status().isOk()).andExpect(jsonPath("$").isArray());
 
         Comment comment = TestDataUtils.createSampleComment(createdPostId);

@@ -130,7 +130,7 @@ public class TestDataUtils {
         comment.setAuthorId(DEFAULT_AUTHOR_ID);
         comment.setPostId(postId);
         comment.setContent("This is a comment.");
-        comment.setCreatedAt(LocalDateTime.parse(DEFAULT_CREATED_DATE_TIME, FORMATTER));
+        comment.setCreatedAt(DEFAULT_CREATED_DATE_TIME);
         return comment;
     }
 
