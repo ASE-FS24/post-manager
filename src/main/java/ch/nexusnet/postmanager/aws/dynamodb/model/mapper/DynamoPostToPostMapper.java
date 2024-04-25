@@ -25,15 +25,9 @@ public class DynamoPostToPostMapper {
         post.setLikeNumber(dynamoDBPost.getLikeNumber());
         post.setCommentNumber(dynamoDBPost.getCommentNumber());
         post.setHashtags(dynamoDBPost.getHashtags());
-
-        if (dynamoDBPost.getCreatedDateTime() != null && !dynamoDBPost.getCreatedDateTime().isEmpty()) {
-            post.setCreatedDateTime(dynamoDBPost.getCreatedDateTime());
-        }
+        post.setCreatedDateTime(dynamoDBPost.getCreatedDateTime());
         post.setEdited(dynamoDBPost.isEdited());
-        if (dynamoDBPost.getEditedDateTime() != null && !dynamoDBPost.getEditedDateTime().isEmpty()) {
-            post.setEditedDateTime(dynamoDBPost.getEditedDateTime());
-        }
-
+        post.setEditedDateTime(dynamoDBPost.getEditedDateTime());
         return post;
     }
 }
