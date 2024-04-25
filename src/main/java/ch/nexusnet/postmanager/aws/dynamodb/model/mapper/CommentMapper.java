@@ -16,9 +16,7 @@ public class CommentMapper {
         comment.setAuthorId(dynamoDBComment.getAuthorId());
         comment.setContent(dynamoDBComment.getContent());
         comment.setLikeNumber(dynamoDBComment.getLikeNumber());
-        if (dynamoDBComment.getCreatedDateTime() != null && !dynamoDBComment.getCreatedDateTime().isEmpty()) {
-            comment.setCreatedAt(dynamoDBComment.getCreatedDateTime());
-        }
+        comment.setCreatedAt(dynamoDBComment.getCreatedDateTime());
         return comment;
     }
 
