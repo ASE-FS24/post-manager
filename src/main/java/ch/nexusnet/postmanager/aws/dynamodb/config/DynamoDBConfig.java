@@ -5,7 +5,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
@@ -18,14 +17,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         (basePackages = "ch.nexusnet.postmanager.aws.dynamodb.repositories")
 public class DynamoDBConfig {
 
-    @Value("${amazon.dynamodb.endpoint}")
-    private String amazonDynamoDBEndpoint;
+    private final String amazonDynamoDBEndpoint = System.getenv("AMAZON_DYNAMODB_ENDPOINT");
 
-    @Value("${amazon.aws.accesskey}")
-    private String amazonAWSAccessKey;
+    private final String amazonAWSAccessKey = System.getenv("AMAZON_DYNAMODB_ACCESS_KEY");
 
-    @Value("${amazon.aws.secretkey}")
-    private String amazonAWSSecretKey;
+    private final String amazonAWSSecretKey = System.getenv("AMAZON_DYNAMODB_SECRET_KEY");
 
     @Bean
     public AmazonDynamoDB amazonDynamoDB() {

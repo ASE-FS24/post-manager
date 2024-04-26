@@ -13,11 +13,9 @@ import com.amazonaws.services.dynamodbv2.model.AttributeAction;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.AttributeValueUpdate;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemRequest;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
@@ -32,13 +30,11 @@ public class LikeServiceImpl implements LikeService {
     private final DynamoDBPostRepository dynamoDBPostRepository;
 
     private final AmazonDynamoDB amazonDynamoDB;
-    private final ZoneId appZoneId;
 
-    public LikeServiceImpl(DynamoDBLikeRepository dynamoDBLikeRepository, DynamoDBPostRepository dynamoDBPostRepository, AmazonDynamoDB amazonDynamoDB, @Value("${app.timezone:CET}") ZoneId appZoneId) {
+    public LikeServiceImpl(DynamoDBLikeRepository dynamoDBLikeRepository, DynamoDBPostRepository dynamoDBPostRepository, AmazonDynamoDB amazonDynamoDB) {
         this.dynamoDBLikeRepository = dynamoDBLikeRepository;
         this.dynamoDBPostRepository = dynamoDBPostRepository;
         this.amazonDynamoDB = amazonDynamoDB;
-        this.appZoneId = appZoneId;
     }
 
     /**
@@ -149,7 +145,7 @@ public class LikeServiceImpl implements LikeService {
         dynamoDBLike.setTargetId(postId);
         dynamoDBLike.setTargetType(post.name());
         dynamoDBLike.setUserId(userId);
-        dynamoDBLike.setTimestamp(FORMATTER.format(LocalDateTime.now(appZoneId)));
+        dynamoDBLike.setTimestamp(FORMATTER.format(LocalDateTime.now()));
         dynamoDBLikeRepository.save(dynamoDBLike);
     }
 
