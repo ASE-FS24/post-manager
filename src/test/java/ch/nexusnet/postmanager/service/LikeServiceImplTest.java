@@ -2,7 +2,6 @@ package ch.nexusnet.postmanager.service;
 
 import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBLike;
 import ch.nexusnet.postmanager.aws.dynamodb.model.table.DynamoDBPost;
-import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBCommentRepository;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBLikeRepository;
 import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBPostRepository;
 import ch.nexusnet.postmanager.model.LikeTargetType;
@@ -17,7 +16,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -41,8 +39,6 @@ class LikeServiceImplTest {
     private DynamoDBLikeRepository dynamoDBLikeRepository;
     @Mock
     private DynamoDBPostRepository dynamoDBPostRepository;
-    @Mock
-    private DynamoDBCommentRepository dynamoDBCommentRepository;
 
     @Mock
     private AmazonDynamoDB amazonDynamoDB;
@@ -51,7 +47,7 @@ class LikeServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        likeService = new LikeServiceImpl(dynamoDBLikeRepository, dynamoDBPostRepository, amazonDynamoDB, ZoneId.of("CET"));
+        likeService = new LikeServiceImpl(dynamoDBLikeRepository, dynamoDBPostRepository, amazonDynamoDB);
     }
 
     @Test

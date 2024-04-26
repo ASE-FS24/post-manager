@@ -21,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +48,7 @@ class PostServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        postService = new PostServiceImpl(dynamoDBPostRepository, dynamoDBLikeRepository, dynamoDBCommentRepository, ZoneId.of("CET"));
+        postService = new PostServiceImpl(dynamoDBPostRepository, dynamoDBLikeRepository, dynamoDBCommentRepository);
         sampleCreatePostDTO = TestDataUtils.createSampleCreatePostDTO();
         sampleUpdatePostDTO = TestDataUtils.createSampleUpdatePostDTO();
         sampleDynamoDBPost = TestDataUtils.createSampleDynamoDBPost();
@@ -189,7 +188,7 @@ class PostServiceImplTest {
         dynamoDBPostRepository = Mockito.mock(DynamoDBPostRepository.class);
         dynamoDBLikeRepository = Mockito.mock(DynamoDBLikeRepository.class);
         dynamoDBCommentRepository = Mockito.mock(DynamoDBCommentRepository.class);
-        postService = new PostServiceImpl(dynamoDBPostRepository, dynamoDBLikeRepository, dynamoDBCommentRepository, ZoneId.of("CET"));
+        postService = new PostServiceImpl(dynamoDBPostRepository, dynamoDBLikeRepository, dynamoDBCommentRepository);
         sampleCreatePostDTO = TestDataUtils.createSampleCreatePostDTO();
         sampleUpdatePostDTO = TestDataUtils.createSampleUpdatePostDTO();
         sampleDynamoDBPost = TestDataUtils.createSampleDynamoDBPost();

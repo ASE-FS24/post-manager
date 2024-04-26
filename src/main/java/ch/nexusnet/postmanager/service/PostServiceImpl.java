@@ -10,11 +10,9 @@ import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Post;
 import ch.nexusnet.postmanager.model.dto.CreatePostDTO;
 import ch.nexusnet.postmanager.model.dto.UpdatePostDTO;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -30,13 +28,11 @@ public class PostServiceImpl implements PostService {
     private final DynamoDBLikeRepository dynamoDBLikeRepository;
 
     private final DynamoDBCommentRepository dynamoDBCommentRepository;
-    private final ZoneId appZoneId;
 
-    public PostServiceImpl(DynamoDBPostRepository dynamoDBPostRepository, DynamoDBLikeRepository dynamoDBLikeRepository, DynamoDBCommentRepository dynamoDBCommentRepository, @Value("${app.timezone:CET}") ZoneId appZoneId) {
+    public PostServiceImpl(DynamoDBPostRepository dynamoDBPostRepository, DynamoDBLikeRepository dynamoDBLikeRepository, DynamoDBCommentRepository dynamoDBCommentRepository) {
         this.dynamoDBPostRepository = dynamoDBPostRepository;
         this.dynamoDBLikeRepository = dynamoDBLikeRepository;
         this.dynamoDBCommentRepository = dynamoDBCommentRepository;
-        this.appZoneId = appZoneId;
     }
 
     /**
@@ -49,7 +45,7 @@ public class PostServiceImpl implements PostService {
     public Post createPost(CreatePostDTO createPostDTO) {
         DynamoDBPost dynamoDBPost = PostToDynamoPostMapper.createPostMap(createPostDTO);
         dynamoDBPost.setId(IdGenerator.generatePostId());
-        dynamoDBPost.setCreatedDateTime(FORMATTER.format(LocalDateTime.now(appZoneId)));
+        dynamoDBPost.setCreatedDateTime(FORMATTER.format(LocalDateTime.now()));
         dynamoDBPost = dynamoDBPostRepository.save(dynamoDBPost);
         return DynamoPostToPostMapper.map(dynamoDBPost);
     }
@@ -107,7 +103,7 @@ public class PostServiceImpl implements PostService {
         }
         DynamoDBPost updatedPost = post.get();
         updatedPost.setEdited(true);
-        updatedPost.setEditedDateTime(FORMATTER.format(LocalDateTime.now(appZoneId)));
+        updatedPost.setEditedDateTime(FORMATTER.format(LocalDateTime.now()));
         updatePostFields(updatedPost, postDetails);
         return DynamoPostToPostMapper.map(dynamoDBPostRepository.save(updatedPost));
     }
