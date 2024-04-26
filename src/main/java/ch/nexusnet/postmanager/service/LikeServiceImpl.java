@@ -100,7 +100,7 @@ public class LikeServiceImpl implements LikeService {
 
         List<String> postIds = dynamoDBLikes.stream()
                 .map(DynamoDBLike::getTargetId)
-                .collect(Collectors.toList());
+                .toList();
 
         List<DynamoDBPost> posts = new ArrayList<>();
         if (!postIds.isEmpty()) {
@@ -115,7 +115,7 @@ public class LikeServiceImpl implements LikeService {
                 .map(like -> postMap.get(like.getTargetId()))
                 .filter(Objects::nonNull)
                 .map(DynamoPostToPostMapper::map)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

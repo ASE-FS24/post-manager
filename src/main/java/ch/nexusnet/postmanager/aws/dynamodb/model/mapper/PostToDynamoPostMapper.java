@@ -5,6 +5,9 @@ import ch.nexusnet.postmanager.model.dto.CreatePostDTO;
 
 public class PostToDynamoPostMapper {
 
+    private PostToDynamoPostMapper() {
+    }
+
     public static DynamoDBPost createPostMap(CreatePostDTO post) {
         DynamoDBPost dynamoDBPost = new DynamoDBPost();
 

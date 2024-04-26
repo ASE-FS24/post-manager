@@ -7,6 +7,9 @@ import ch.nexusnet.postmanager.model.PostType;
 
 public class DynamoPostToPostMapper {
 
+    private DynamoPostToPostMapper() {
+    }
+
     public static Post map(DynamoDBPost dynamoDBPost) {
         Post post = new Post();
 

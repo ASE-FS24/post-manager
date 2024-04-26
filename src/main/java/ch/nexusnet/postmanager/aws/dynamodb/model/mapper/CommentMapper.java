@@ -6,6 +6,9 @@ import ch.nexusnet.postmanager.model.dto.CreateCommentDTO;
 
 public class CommentMapper {
 
+    private CommentMapper() {
+    }
+
     public static Comment convertDynamoDBCommentToComment(DynamoDBComment dynamoDBComment) {
         if (dynamoDBComment == null) {
             return null;
