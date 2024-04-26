@@ -18,13 +18,13 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 public class PostServiceImpl implements PostService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
+    public static final String POST_NOT_FOUND_MESSAGE = "Post not found with id: ";
+
     private final DynamoDBPostRepository dynamoDBPostRepository;
 
     private final DynamoDBLikeRepository dynamoDBLikeRepository;
@@ -39,6 +39,12 @@ public class PostServiceImpl implements PostService {
         this.appZoneId = appZoneId;
     }
 
+    /**
+     * Creates a post based on the specified CreatePostDTO object.
+     *
+     * @param createPostDTO the data transfer object containing the post details
+     * @return the created Post object
+     */
     @Override
     public Post createPost(CreatePostDTO createPostDTO) {
         DynamoDBPost dynamoDBPost = PostToDynamoPostMapper.createPostMap(createPostDTO);
@@ -48,31 +54,56 @@ public class PostServiceImpl implements PostService {
         return DynamoPostToPostMapper.map(dynamoDBPost);
     }
 
+    /**
+     * Finds all posts.
+     *
+     * @return a list of Post objects
+     */
     @Override
     public List<Post> findAllPosts() {
-        return StreamSupport.stream(dynamoDBPostRepository.findDynamoDBPostsByIdStartingWith("POST").spliterator(), false)
+        return dynamoDBPostRepository.findDynamoDBPostsByIdStartingWith("POST").stream()
                 .map(DynamoPostToPostMapper::map)
-                .collect(Collectors.toList());
+                .toList();
     }
 
+    /**
+     * Finds a post by its ID.
+     *
+     * @param id the ID of the post to retrieve
+     * @return the Post object with the specified ID
+     * @throws ResourceNotFoundException if the post with the specified ID is not found
+     */
     @Override
     public Post findById(String id) {
         return DynamoPostToPostMapper.map(dynamoDBPostRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id)));
+                .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND_MESSAGE + id)));
     }
 
-
+    /**
+     * Finds all posts associated with a specific author ID.
+     *
+     * @param authorId the ID of the author to retrieve posts for
+     * @return a list of Post objects associated with the specified author ID
+     */
     @Override
     public List<Post> findByAuthorId(String authorId) {
         return dynamoDBPostRepository.findByAuthorId(authorId).stream().map(DynamoPostToPostMapper::map)
-                .collect(Collectors.toList());
+                .toList();
     }
 
+    /**
+     * Updates a post based on the specified UpdatePostDTO object.
+     *
+     * @param id          the ID of the post to update
+     * @param postDetails the data transfer object containing the post details to update
+     * @return the updated Post object
+     * @throws ResourceNotFoundException if the post with the specified ID is not found
+     */
     @Override
     public Post updatePost(String id, UpdatePostDTO postDetails) {
         Optional<DynamoDBPost> post = dynamoDBPostRepository.findById(id);
         if (post.isEmpty()) {
-            throw new ResourceNotFoundException("Post not found with id: " + id);
+            throw new ResourceNotFoundException(POST_NOT_FOUND_MESSAGE + id);
         }
         DynamoDBPost updatedPost = post.get();
         updatedPost.setEdited(true);
@@ -81,15 +112,24 @@ public class PostServiceImpl implements PostService {
         return DynamoPostToPostMapper.map(dynamoDBPostRepository.save(updatedPost));
     }
 
+    /**
+     * Deletes a post with the specified ID.
+     *
+     * @param id the ID of the post to delete
+     * @throws ResourceNotFoundException if the post with the specified ID is not found
+     */
     @Override
     public void deletePost(String id) {
         dynamoDBPostRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
-        dynamoDBPostRepository.deleteById(id);
+                .ifPresentOrElse(
+                        post -> dynamoDBPostRepository.deleteById(id),
+                        () -> {
+                            throw new ResourceNotFoundException(POST_NOT_FOUND_MESSAGE + id);
+                        }
+                );
         dynamoDBLikeRepository.deleteAllByTargetId(id);
         dynamoDBCommentRepository.deleteAllByPostId(id);
     }
-
 
     private void updatePostFields(DynamoDBPost post, UpdatePostDTO postDetails) {
         if (postDetails.getDescription() != null) {
