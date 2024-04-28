@@ -5,10 +5,10 @@ import ch.nexusnet.postmanager.model.Post;
 import ch.nexusnet.postmanager.model.PostStatus;
 import ch.nexusnet.postmanager.model.PostType;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 public class DynamoPostToPostMapper {
+
+    private DynamoPostToPostMapper() {
+    }
 
     public static Post map(DynamoDBPost dynamoDBPost) {
         Post post = new Post();
@@ -26,17 +26,11 @@ public class DynamoPostToPostMapper {
         post.setShortDescription(dynamoDBPost.getShortDescription());
         post.setDescription(dynamoDBPost.getDescription());
         post.setLikeNumber(dynamoDBPost.getLikeNumber());
+        post.setCommentNumber(dynamoDBPost.getCommentNumber());
         post.setHashtags(dynamoDBPost.getHashtags());
-
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        if (dynamoDBPost.getCreatedDateTime() != null && !dynamoDBPost.getCreatedDateTime().isEmpty()) {
-            post.setCreatedDateTime(LocalDateTime.parse(dynamoDBPost.getCreatedDateTime(), formatter));
-        }
+        post.setCreatedDateTime(dynamoDBPost.getCreatedDateTime());
         post.setEdited(dynamoDBPost.isEdited());
-        if (dynamoDBPost.getEditedDateTime() != null && !dynamoDBPost.getEditedDateTime().isEmpty()) {
-            post.setEditedDateTime(LocalDateTime.parse(dynamoDBPost.getEditedDateTime(), formatter));
-        }
-
+        post.setEditedDateTime(dynamoDBPost.getEditedDateTime());
         return post;
     }
 }

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -103,7 +102,7 @@ public class CommentServiceImpl implements CommentService {
     private List<Comment> mapDynamoDBCommentsToComments(List<DynamoDBComment> dynamoDBComments) {
         return dynamoDBComments.stream()
                 .map(CommentMapper::convertDynamoDBCommentToComment)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private DynamoDBComment findDynamoDBCommentById(String id) {
