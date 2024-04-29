@@ -7,15 +7,19 @@ import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBPostRepository;
 import ch.nexusnet.postmanager.aws.s3.config.S3ClientConfiguration;
 import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Post;
+import ch.nexusnet.postmanager.model.PostStatus;
+import ch.nexusnet.postmanager.model.PostType;
 import ch.nexusnet.postmanager.model.dto.CreatePostDTO;
 import ch.nexusnet.postmanager.model.dto.UpdatePostDTO;
 import ch.nexusnet.postmanager.utils.TestDataUtils;
+import net.jqwik.api.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.ZoneId;
@@ -23,10 +27,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceImplTest {
@@ -98,7 +102,7 @@ class PostServiceImplTest {
     @Test
     void findAllPosts_Success() {
         List<DynamoDBPost> dbPosts = Arrays.asList(sampleDynamoDBPost, sampleDynamoDBPost);
-        given(dynamoDBPostRepository.findAll()).willReturn(dbPosts);
+        given(dynamoDBPostRepository.findDynamoDBPostsByIdStartingWith("POST")).willReturn(dbPosts);
 
         List<Post> posts = postService.findAllPosts();
 
@@ -183,5 +187,96 @@ class PostServiceImplTest {
         assertThrows(ResourceNotFoundException.class, () -> postService.deletePost(sampleDynamoDBPost.getId()));
     }
 
+    @Test
+    void deletePost_NullFilesUploaded() {
+        sampleDynamoDBPost.setFileUrls(null);
+        given(dynamoDBPostRepository.findById(sampleDynamoDBPost.getId())).willReturn(Optional.of(sampleDynamoDBPost));
 
+        postService.deletePost(sampleDynamoDBPost.getId());
+
+        verify(s3ClientConfig, never()).getS3client();
+    }
+
+    @Test
+    void deletePost_EmptyFilesUploaded() {
+        sampleDynamoDBPost.setFileUrls(List.of());
+        given(dynamoDBPostRepository.findById(sampleDynamoDBPost.getId())).willReturn(Optional.of(sampleDynamoDBPost));
+
+        postService.deletePost(sampleDynamoDBPost.getId());
+
+        verify(s3ClientConfig, never()).getS3client();
+    }
+
+
+    @Property
+    void updatePost(@ForAll("validUpdatePostDTOs") UpdatePostDTO postDetails) {
+        dynamoDBPostRepository = Mockito.mock(DynamoDBPostRepository.class);
+        dynamoDBLikeRepository = Mockito.mock(DynamoDBLikeRepository.class);
+        dynamoDBCommentRepository = Mockito.mock(DynamoDBCommentRepository.class);
+        s3ClientConfig = Mockito.mock(S3ClientConfiguration.class);
+        postService = new PostServiceImpl(dynamoDBPostRepository, dynamoDBLikeRepository, dynamoDBCommentRepository, ZoneId.of("CET"), s3ClientConfig);
+        sampleCreatePostDTO = TestDataUtils.createSampleCreatePostDTO();
+        sampleUpdatePostDTO = TestDataUtils.createSampleUpdatePostDTO();
+        sampleDynamoDBPost = TestDataUtils.createSampleDynamoDBPost();
+        String existingPostId = sampleDynamoDBPost.getId();
+
+        when(dynamoDBPostRepository.findById(existingPostId)).thenReturn(Optional.of(TestDataUtils.createSampleDynamoDBPost()));
+        when(dynamoDBPostRepository.save(any(DynamoDBPost.class))).thenReturn(sampleDynamoDBPost);
+
+        postService.updatePost(existingPostId, postDetails);
+
+        ArgumentCaptor<DynamoDBPost> captor = ArgumentCaptor.forClass(DynamoDBPost.class);
+        verify(dynamoDBPostRepository).save(captor.capture());
+        DynamoDBPost updatedPost = captor.getValue();
+
+        assertThat(updatedPost.getId()).isNotNull();
+        assertThat(updatedPost.getAuthorId()).isNotNull();
+        assertThat(updatedPost.getType()).isNotNull();
+        assertThat(updatedPost.getStatus()).isNotNull();
+        assertThat(updatedPost.getTitle()).isNotNull();
+        assertThat(updatedPost.getImage()).isNotNull();
+        assertThat(updatedPost.getShortDescription()).isNotNull();
+        assertThat(updatedPost.getDescription()).isNotNull();
+        assertThat(updatedPost.getHashtags()).isNotNull();
+
+        if (postDetails.getType() != null) {
+            assertThat(updatedPost.getType()).isEqualTo(postDetails.getType().name());
+        }
+        if (postDetails.getStatus() != null) {
+            assertThat(updatedPost.getStatus()).isEqualTo(postDetails.getStatus().name());
+        }
+        if (postDetails.getTitle() != null) {
+            assertThat(updatedPost.getTitle()).isEqualTo(postDetails.getTitle());
+        }
+        if (postDetails.getImage() != null) {
+            assertThat(updatedPost.getImage()).isEqualTo(postDetails.getImage());
+        }
+        if (postDetails.getShortDescription() != null) {
+            assertThat(updatedPost.getShortDescription()).isEqualTo(postDetails.getShortDescription());
+        }
+        if (postDetails.getDescription() != null) {
+            assertThat(updatedPost.getDescription()).isEqualTo(postDetails.getDescription());
+        }
+        if (postDetails.getHashtags() != null) {
+            assertThat(updatedPost.getHashtags()).isEqualTo(postDetails.getHashtags());
+        }
+        if (postDetails.getType() != null || postDetails.getStatus() != null || postDetails.getTitle() != null || postDetails.getImage() != null || postDetails.getShortDescription() != null || postDetails.getDescription() != null || postDetails.getHashtags() != null) {
+            assertThat(updatedPost.isEdited()).isTrue();
+            assertThat(updatedPost.getEditedDateTime()).isNotNull();
+        }
+    }
+
+    @Provide
+    Arbitrary<UpdatePostDTO> validUpdatePostDTOs() {
+        Arbitrary<PostType> postType = Arbitraries.of(PostType.class).injectNull(0.5);
+        Arbitrary<PostStatus> postStatus = Arbitraries.of(PostStatus.class).injectNull(0.5);
+        Arbitrary<String> title = Arbitraries.strings().withCharRange('a', 'z').ofMinLength(1).ofMaxLength(255).injectNull(0.5);
+        Arbitrary<String> image = Arbitraries.strings().alpha().numeric().ofMaxLength(255).injectNull(0.5);
+        Arbitrary<String> shortDescription = Arbitraries.strings().withCharRange('a', 'z').ofMaxLength(500).injectNull(0.5);
+        Arbitrary<String> description = Arbitraries.strings().withCharRange('a', 'z').ofMinLength(1).injectNull(0.5);
+        Arbitrary<List<String>> hashtags = Arbitraries.strings().list().ofMinSize(0).ofMaxSize(10).injectNull(0.5);
+
+        return Combinators.combine(postType, postStatus, title, image, shortDescription, description, hashtags)
+                .as(UpdatePostDTO::new);
+    }
 }

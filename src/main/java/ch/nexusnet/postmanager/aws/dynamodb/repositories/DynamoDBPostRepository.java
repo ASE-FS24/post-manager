@@ -9,5 +9,7 @@ import java.util.List;
 @EnableScan
 public interface DynamoDBPostRepository extends CrudRepository<DynamoDBPost, String> {
     List<DynamoDBPost> findByAuthorId(String authorId);
+
+    List<DynamoDBPost> findDynamoDBPostsByIdStartingWith(String id);
 }
 

@@ -8,15 +8,14 @@ services:
     environment:
       - AWS_DEFAULT_REGION=eu-central-2
       - EDGE_PORT=4566
-      - SERVICES=dynamodb,s3,lambda
+      - SERVICES=dynamodb,lambda,apigateway
       - DEBUG=1 # Enable debugging output
       - KINESIS_PROVIDER=kinesalite
-    volumes:
-      - '${TMPDIR:-/tmp/localstack}:/tmp/localstack'
-      - './:/docker-entrypoint-initaws.d' # Mount your project directory to automatically run scripts
-      - '/var/run/docker.sock:/var/run/docker.sock' # Mount the Docker socket to allow LocalStack to manage Docker containers
-    networks:
-      - backend
+      - LAMBDA_LIMITS_CODE_SIZE_ZIPPED=524288000
+      - LAMBDA_LIMITS_CREATE_FUNCTION_REQUEST_SIZE=524288000
+      - LAMBDA_DOCKER_NETWORK=backend
 
-networks:
-  backend:
+    volumes:
+      - './:/etc/localstack/init/ready.d/' # Mount your project directory to automatically run scripts
+      - '/var/run/docker.sock:/var/run/docker.sock' # Mount the Docker socket to allow LocalStack to manage Docker containers
+      - './target/postmanager-0.0.1-SNAPSHOT.jar:/tmp/postmanager-0.0.1-SNAPSHOT.jar' # Mount the jar file to be used by the lambda

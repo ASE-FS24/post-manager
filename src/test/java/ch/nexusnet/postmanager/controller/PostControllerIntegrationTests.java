@@ -135,7 +135,8 @@ public class PostControllerIntegrationTests {
     public void testGetAllPosts() throws Exception {
         mockMvc.perform(get("/posts"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1));
     }
 
     @Test
