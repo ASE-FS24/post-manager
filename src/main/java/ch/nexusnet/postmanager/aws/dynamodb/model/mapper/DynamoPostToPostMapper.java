@@ -28,6 +28,7 @@ public class DynamoPostToPostMapper {
         post.setLikeNumber(dynamoDBPost.getLikeNumber());
         post.setCommentNumber(dynamoDBPost.getCommentNumber());
         post.setHashtags(dynamoDBPost.getHashtags());
+        post.setFileUrls(dynamoDBPost.getFileUrls());
         post.setCreatedDateTime(dynamoDBPost.getCreatedDateTime());
         post.setEdited(dynamoDBPost.isEdited());
         post.setEditedDateTime(dynamoDBPost.getEditedDateTime());

@@ -8,6 +8,7 @@ import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Comment;
 import ch.nexusnet.postmanager.model.dto.CreateCommentDTO;
 import ch.nexusnet.postmanager.model.dto.UpdateCommentDTO;
+import ch.nexusnet.postmanager.util.IdGenerator;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeAction;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;

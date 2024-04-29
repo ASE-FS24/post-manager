@@ -8,7 +8,7 @@ import ch.nexusnet.postmanager.model.PostStatus;
 import ch.nexusnet.postmanager.model.PostType;
 import ch.nexusnet.postmanager.model.dto.CreatePostDTO;
 import ch.nexusnet.postmanager.model.dto.UpdatePostDTO;
-import ch.nexusnet.postmanager.service.IdGenerator;
+import ch.nexusnet.postmanager.util.IdGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.AfterEach;

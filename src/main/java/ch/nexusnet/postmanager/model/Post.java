@@ -40,4 +40,6 @@ public class Post {
     private boolean edited = false;
 
     private String editedDateTime;
+
+    private List<String> fileUrls;
 }
