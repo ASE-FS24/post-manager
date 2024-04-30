@@ -24,11 +24,24 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
+          aws-region: us-east-1
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Start LocalStack
+        id: start-localstack
+        uses: LocalStack/setup-localstack@v0.1.2
+        with:
+          image-tag: 'latest'
+          install-awslocal: 'true'
+
+      - name: Execute scripts in LocalStack
+        run: |
+          cd $GITHUB_WORKSPACE
+          find . -type f -name "*.sh" -exec chmod +x {} \;
+          find . -type f -name "*.sh" -exec sh {} \;
 
       - name: Build with Maven
         run: mvn -B package -DfinalName=postmanager --file pom.xml
@@ -43,7 +56,7 @@ jobs:
 
       - name: Update Lambda function with latest ECR image
         env:
-          LAMBDA_NAME: nexusnet-postmanager-ecr
+          LAMBDA_NAME: postmanager_api_ecr
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: nexusnet-postmanager
           IMAGE_TAG: latest
