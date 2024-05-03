@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class FileStorageServiceImplTest {
+class FileStorageServiceImplTest {
     @Mock
     private S3ClientConfiguration s3ClientConfiguration;
     @Mock
@@ -40,7 +40,7 @@ public class FileStorageServiceImplTest {
     private FileStorageServiceImpl fileStorageService;
 
     @Test
-    public void uploadFileToPostSuccessfully() throws IOException {
+    void uploadFileToPostSuccessfully() throws IOException {
         byte[] content = Files.readAllBytes(Paths.get("src/test/java/ch/nexusnet/postmanager/files/478px-American_Beaver-1649739069.jpg"));
         MultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", content);
 
@@ -58,7 +58,7 @@ public class FileStorageServiceImplTest {
     }
 
     @Test
-    public void uploadFileToPostThrowsResourceNotFoundException() throws IOException {
+    void uploadFileToPostThrowsResourceNotFoundException() throws IOException {
         byte[] content = Files.readAllBytes(Paths.get("src/test/java/ch/nexusnet/postmanager/files/478px-American_Beaver-1649739069.jpg"));
         MultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", content);
 
@@ -68,7 +68,7 @@ public class FileStorageServiceImplTest {
     }
 
     @Test
-    public void uploadFileToPostThrowsUnsupportedFileTypeException() {
+    void uploadFileToPostThrowsUnsupportedFileTypeException() {
         MultipartFile file = new MockMultipartFile("file", "hello.txt", "text/plain", "Hello, World!".getBytes());
         DynamoDBPost post = new DynamoDBPost();
         post.setId("123");

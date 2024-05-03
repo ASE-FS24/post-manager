@@ -13,6 +13,9 @@ public class FileValidationUtil {
 
     private static final Tika tika = new Tika();
 
+    private FileValidationUtil() {
+    }
+
     /**
      * Validates the filet ype of a given file.
      *

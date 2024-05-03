@@ -59,7 +59,7 @@ class SystemTest {
      * Then all posts are viewed. Then users interact with the post by liking and commenting. Then the post is updated and finally deleted.
      */
     @Test
-    public void test() throws Exception {
+    void test() throws Exception {
         CreatePostDTO createPostDTO = TestDataUtils.createSampleCreatePostDTO();
 
         String responseBody = mockMvc.perform(post("/posts")

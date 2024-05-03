@@ -19,12 +19,13 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PostController.class)
-public class PostControllerTest {
+class PostControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,7 +37,7 @@ public class PostControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    public void createPostTest() throws Exception {
+    void createPostTest() throws Exception {
         CreatePostDTO createPostDTO = TestDataUtils.createSampleCreatePostDTO();
         Post post = TestDataUtils.createSamplePost();
 
@@ -50,7 +51,7 @@ public class PostControllerTest {
     }
 
     @Test
-    public void getAllPostsTest() throws Exception {
+    void getAllPostsTest() throws Exception {
         List<Post> allPosts = Arrays.asList(TestDataUtils.createSamplePost(), TestDataUtils.createSamplePost());
         given(postService.findAllPosts()).willReturn(allPosts);
 
@@ -60,7 +61,7 @@ public class PostControllerTest {
     }
 
     @Test
-    public void getPostByIdTest() throws Exception {
+    void getPostByIdTest() throws Exception {
         Post post = TestDataUtils.createSamplePost();
         given(postService.findById(post.getId())).willReturn(post);
 
@@ -70,7 +71,7 @@ public class PostControllerTest {
     }
 
     @Test
-    public void getPostsByAuthorIdTest() throws Exception {
+    void getPostsByAuthorIdTest() throws Exception {
         List<Post> posts = Arrays.asList(TestDataUtils.createSamplePost(), TestDataUtils.createSamplePost());
         given(postService.findByAuthorId(TestDataUtils.DEFAULT_AUTHOR_ID)).willReturn(posts);
 
@@ -80,10 +81,10 @@ public class PostControllerTest {
     }
 
     @Test
-    public void updatePostTest() throws Exception {
+    void updatePostTest() throws Exception {
         UpdatePostDTO updatePostDTO = TestDataUtils.createSampleUpdatePostDTO();
         Post updatedPost = TestDataUtils.createSampleUpdatedPost();
-        given(postService.updatePost(eq(updatedPost.getId()), eq(updatePostDTO))).willReturn(updatedPost);
+        given(postService.updatePost(updatedPost.getId(), updatePostDTO)).willReturn(updatedPost);
 
         mockMvc.perform(put("/posts/" + updatedPost.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -92,7 +93,7 @@ public class PostControllerTest {
     }
 
     @Test
-    public void deletePostTest() throws Exception {
+    void deletePostTest() throws Exception {
         Post post = TestDataUtils.createSamplePost();
         willDoNothing().given(postService).deletePost(post.getId());
 

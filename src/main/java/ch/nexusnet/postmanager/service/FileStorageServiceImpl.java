@@ -53,6 +53,14 @@ public class FileStorageServiceImpl implements FileStorageService {
      */
     @Override
     public void deleteFile(String fileKey) {
+        int postIndex = fileKey.indexOf("POST-");
+        int slashIndex = fileKey.indexOf("/", postIndex);
+        String postId = fileKey.substring(postIndex, slashIndex);
+
+        DynamoDBPost post = findPostById(postId);
+        post.removeFileUrl(fileKey);
+
+        dynamoDBPostRepository.save(post);
         s3ClientConfiguration.getS3client().deleteObject(new DeleteObjectRequest(bucketName, fileKey));
     }
 

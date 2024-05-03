@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,7 +32,7 @@ import static org.testcontainers.shaded.org.hamcrest.Matchers.containsString;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class FileUploadIntegrationTest {
+class FileUploadIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -65,7 +66,7 @@ public class FileUploadIntegrationTest {
     }
 
     @Test
-    public void testFileUpload() throws Exception {
+    void testFileUpload() throws Exception {
         byte[] content = Files.readAllBytes(Paths.get("src/test/java/ch/nexusnet/postmanager/files/478px-American_Beaver-1649739069.jpg"));
         MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", content);
 
@@ -77,6 +78,9 @@ public class FileUploadIntegrationTest {
         assertThat(fileKey, containsString(postId));
 
         s3ClientConfig.getS3client().deleteObject(new DeleteObjectRequest(bucketName, fileKey));
+
+        DynamoDBPost dynamoDBPost = dynamoDBPostRepository.findById(postId).orElseThrow();
+        assertEquals(1, dynamoDBPost.getFileUrls().size());
     }
 
     @Test
@@ -89,6 +93,29 @@ public class FileUploadIntegrationTest {
 
         mockMvc.perform(delete("/posts/deleteFile/{fileKey}", fileKey))
                 .andExpect(status().isOk());
+
+        DynamoDBPost dynamoDBPost = dynamoDBPostRepository.findById(postId).orElseThrow();
+        assertEquals(0, dynamoDBPost.getFileUrls().size());
+    }
+
+    @Test
+    void testUploadAndDeleteFile() throws Exception {
+        byte[] content = Files.readAllBytes(Paths.get("src/test/java/ch/nexusnet/postmanager/files/478px-American_Beaver-1649739069.jpg"));
+        MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", content);
+
+        String fileKey = mockMvc.perform(multipart("/posts/{postId}/uploadFile", postId)
+                        .file(file)
+                        .characterEncoding("UTF-8"))
+                .andExpect(status().isCreated()).andReturn().getResponse().getHeader("Location");
+
+        DynamoDBPost dynamoDBPost = dynamoDBPostRepository.findById(postId).orElseThrow();
+        assertEquals(1, dynamoDBPost.getFileUrls().size());
+
+        mockMvc.perform(delete("/posts/deleteFile/{fileKey}", fileKey))
+                .andExpect(status().isOk());
+
+        dynamoDBPost = dynamoDBPostRepository.findById(postId).orElseThrow();
+        assertEquals(0, dynamoDBPost.getFileUrls().size());
     }
 
 }

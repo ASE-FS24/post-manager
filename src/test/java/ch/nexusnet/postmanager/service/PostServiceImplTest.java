@@ -124,8 +124,9 @@ class PostServiceImplTest {
     @Test
     void findById_PostNotFound_ThrowsException() {
         given(dynamoDBPostRepository.findById(sampleDynamoDBPost.getId())).willReturn(Optional.empty());
+        String postId = sampleDynamoDBPost.getId();
 
-        assertThrows(ResourceNotFoundException.class, () -> postService.findById(sampleDynamoDBPost.getId()));
+        assertThrows(ResourceNotFoundException.class, () -> postService.findById(postId));
     }
 
     @Test
@@ -168,8 +169,9 @@ class PostServiceImplTest {
     @Test
     void updatePost_NotFound_ThrowsException() {
         given(dynamoDBPostRepository.findById(sampleDynamoDBPost.getId())).willReturn(Optional.empty());
+        String postId = sampleDynamoDBPost.getId();
 
-        assertThrows(ResourceNotFoundException.class, () -> postService.updatePost(sampleDynamoDBPost.getId(), new UpdatePostDTO()));
+        assertThrows(ResourceNotFoundException.class, () -> postService.updatePost(postId, sampleUpdatePostDTO));
     }
 
     @Test
@@ -183,8 +185,9 @@ class PostServiceImplTest {
     @Test
     void deletePost_PostNotFound_ThrowsException() {
         given(dynamoDBPostRepository.findById(sampleDynamoDBPost.getId())).willReturn(Optional.empty());
+        String postId = sampleDynamoDBPost.getId();
 
-        assertThrows(ResourceNotFoundException.class, () -> postService.deletePost(sampleDynamoDBPost.getId()));
+        assertThrows(ResourceNotFoundException.class, () -> postService.deletePost(postId));
     }
 
     @Test
