@@ -4,7 +4,7 @@ import ch.nexusnet.postmanager.PostManagerApplication;
 import com.amazonaws.serverless.exceptions.ContainerInitializationException;
 import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
-import com.amazonaws.serverless.proxy.spring.SpringLambdaContainerHandler;
+import com.amazonaws.serverless.proxy.spring.SpringBootLambdaContainerHandler;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 
@@ -13,11 +13,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class LambdaHandler implements RequestStreamHandler {
-    private static final SpringLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
+    private static final SpringBootLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
 
     static {
         try {
-            handler = SpringLambdaContainerHandler.getAwsProxyHandler(PostManagerApplication.class);
+            handler = SpringBootLambdaContainerHandler.getAwsProxyHandler(PostManagerApplication.class);
         } catch (ContainerInitializationException e) {
             // if we fail here. We re-throw the exception to force another cold start
             e.printStackTrace();
