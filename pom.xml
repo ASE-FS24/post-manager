@@ -89,11 +89,6 @@
 			<version>2.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.amazonaws.serverless</groupId>
-			<artifactId>aws-serverless-java-container-spring</artifactId>
-			<version>2.0.0</version>
-		</dependency>
-		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-dynamodb</artifactId>
 			<version>1.12.676</version>
@@ -164,12 +159,9 @@
 						</goals>
 						<configuration>
 							<transformers>
-								<transformer
-										implementation="org.apache.logging.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
-								<transformer
-										implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-								<transformer
-										implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<transformer implementation="org.apache.logging.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
 										<Multi-Release>true</Multi-Release>
 									</manifestEntries>
