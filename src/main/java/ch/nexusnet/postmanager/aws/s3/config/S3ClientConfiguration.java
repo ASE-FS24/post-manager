@@ -7,7 +7,6 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -15,16 +14,12 @@ import javax.annotation.PostConstruct;
 @Component
 public class S3ClientConfiguration {
 
-    private static final Regions region = Regions.EU_CENTRAL_2;
-    @Value("${amazon.s3.endpoint}")
-    private String serviceEndpoint;
-    @Value("${amazon.aws.s3.accesskey}")
-    private String accessKey;
-    @Value("${amazon.aws.s3.secretkey}")
-    private String secretKey;
-    @Value("${postmanager.aws.s3.bucket}")
+    private static final Regions region = Regions.US_EAST_1;
+    private final String serviceEndpoint = System.getenv("AMAZON_S3_ENDPOINT");
+    private final String accessKey = System.getenv("AMAZON_S3_ACCESS_KEY");
+    private final String secretKey = System.getenv("AMAZON_S3_SECRET_KEY");
     @Getter
-    private String bucketName;
+    private final String bucketName = System.getenv("AMAZON_PM_BUCKET");
     @Getter
     private AmazonS3 s3client;
 

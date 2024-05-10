@@ -11,7 +11,6 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,8 +24,7 @@ public class FileStorageServiceImpl implements FileStorageService {
     private static final String POST_FILE_PATH = "post-files/";
     private final S3ClientConfiguration s3ClientConfiguration;
     private final DynamoDBPostRepository dynamoDBPostRepository;
-    @Value("${postmanager.aws.s3.bucket}")
-    private String bucketName;
+    private final String bucketName = System.getenv("AMAZON_PM_BUCKET");
 
     /**
      * Uploads a file to a post.
