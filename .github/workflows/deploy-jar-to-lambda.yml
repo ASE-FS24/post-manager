@@ -1,0 +1,50 @@
+name: Deploy JAR to AWS Lambda
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-jar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: Setup AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build with Maven
+        run: mvn -B package -DfinalName=postmanager -DskipTests dependency:go-offline dependency:copy-dependencies --file pom.xml
+      
+      - name: Upload JAR to S3
+        env:
+          BUCKET_NAME: nexusnet-jars
+        run: aws s3 cp target/original-postmanager.jar s3://$BUCKET_NAME/
+
+      - name: Update Lambda Function
+        env:
+          BUCKET_NAME: nexusnet-jars
+          LAMBDA_FUNCTION_NAME: postmanager_api_jar 
+        run: |
+          aws lambda update-function-code \
+            --function-name $LAMBDA_FUNCTION_NAME \
+            --s3-bucket $BUCKET_NAME \
+            --s3-key original-postmanager.jar
+
