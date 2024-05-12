@@ -8,7 +8,7 @@ import ch.nexusnet.postmanager.model.PostStatus;
 import ch.nexusnet.postmanager.model.PostType;
 import ch.nexusnet.postmanager.model.dto.CreatePostDTO;
 import ch.nexusnet.postmanager.model.dto.UpdatePostDTO;
-import ch.nexusnet.postmanager.service.IdGenerator;
+import ch.nexusnet.postmanager.util.IdGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.AfterEach;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class PostControllerIntegrationTests {
+class PostControllerIntegrationTests {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
     private static final String AUTHOR_ID = UUID.randomUUID().toString();
@@ -82,7 +82,7 @@ public class PostControllerIntegrationTests {
     }
 
     @Test
-    public void testCreatePost() throws Exception {
+    void testCreatePost() throws Exception {
         CreatePostDTO createPostDTO = new CreatePostDTO();
         createPostDTO.setAuthorId(AUTHOR_ID);
         createPostDTO.setType(PostType.PROJECT);
@@ -119,7 +119,7 @@ public class PostControllerIntegrationTests {
     }
 
     @Test
-    public void testCreatePostWithMissingFields() throws Exception {
+    void testCreatePostWithMissingFields() throws Exception {
         CreatePostDTO createPostDTO = new CreatePostDTO();
 
         mockMvc.perform(post("/posts")
@@ -132,7 +132,7 @@ public class PostControllerIntegrationTests {
 
 
     @Test
-    public void testGetAllPosts() throws Exception {
+    void testGetAllPosts() throws Exception {
         mockMvc.perform(get("/posts"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -140,7 +140,7 @@ public class PostControllerIntegrationTests {
     }
 
     @Test
-    public void testGetPostById() throws Exception {
+    void testGetPostById() throws Exception {
         String postId = savedPost.getId();
         mockMvc.perform(get("/posts/{id}", postId))
                 .andExpect(status().isOk())
@@ -148,7 +148,7 @@ public class PostControllerIntegrationTests {
     }
 
     @Test
-    public void testGetPostByNonExistentId() throws Exception {
+    void testGetPostByNonExistentId() throws Exception {
         String nonExistentPostId = "nonexistent_id";
         mockMvc.perform(get("/posts/{id}", nonExistentPostId)).andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -159,7 +159,7 @@ public class PostControllerIntegrationTests {
 
 
     @Test
-    public void testGetPostsByAuthorId() throws Exception {
+    void testGetPostsByAuthorId() throws Exception {
         String authorId = savedPost.getAuthorId();
         mockMvc.perform(get("/posts/user/{authorId}", authorId))
                 .andExpect(status().isOk())
@@ -167,7 +167,7 @@ public class PostControllerIntegrationTests {
     }
 
     @Test
-    public void testUpdatePost() throws Exception {
+    void testUpdatePost() throws Exception {
         String postId = savedPost.getId();
         UpdatePostDTO updatePostDTO = new UpdatePostDTO();
         updatePostDTO.setDescription("New Description");
@@ -193,7 +193,7 @@ public class PostControllerIntegrationTests {
     }
 
     @Test
-    public void testUpdateNonExistentPost() throws Exception {
+    void testUpdateNonExistentPost() throws Exception {
         UpdatePostDTO updatePostDTO = new UpdatePostDTO();
         updatePostDTO.setTitle("New Title");
 
@@ -210,7 +210,7 @@ public class PostControllerIntegrationTests {
 
 
     @Test
-    public void testDeletePost() throws Exception {
+    void testDeletePost() throws Exception {
         String postId = savedPost.getId();
         mockMvc.perform(delete("/posts/{id}", postId))
                 .andExpect(status().isOk());

@@ -13,5 +13,4 @@ public interface DynamoDBCommentRepository extends CrudRepository<DynamoDBCommen
 
     List<DynamoDBComment> findByAuthorId(String authorId);
 
-
 }

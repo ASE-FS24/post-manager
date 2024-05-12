@@ -7,6 +7,7 @@ import ch.nexusnet.postmanager.exception.ResourceNotFoundException;
 import ch.nexusnet.postmanager.model.Comment;
 import ch.nexusnet.postmanager.model.dto.CreateCommentDTO;
 import ch.nexusnet.postmanager.model.dto.UpdateCommentDTO;
+import ch.nexusnet.postmanager.util.IdGenerator;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,10 +23,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
 
 @ExtendWith(MockitoExtension.class)
-public class CommentServiceImplTest {
+class CommentServiceImplTest {
 
     private final static String POST_ID = IdGenerator.generatePostId();
     private final static String AUTHOR_ID = UUID.randomUUID().toString();
@@ -73,7 +75,7 @@ public class CommentServiceImplTest {
     void shouldFindAllCommentsByPostId() {
         List<DynamoDBComment> comments = new ArrayList<>();
         comments.add(new DynamoDBComment());
-        Mockito.when(dynamoDBCommentRepository.findByPostId(eq(POST_ID))).thenReturn(comments);
+        Mockito.when(dynamoDBCommentRepository.findByPostId(POST_ID)).thenReturn(comments);
 
         List<Comment> actualComments = commentService.findAllCommentsByPostId(POST_ID);
 
@@ -84,12 +86,12 @@ public class CommentServiceImplTest {
     @Test
     void shouldReturnEmptyListWhenFindAllCommentsByPostIdForPostWithoutComments() {
         List<DynamoDBComment> comments = new ArrayList<>();
-        Mockito.when(dynamoDBCommentRepository.findByPostId(eq(POST_ID))).thenReturn(comments);
+        Mockito.when(dynamoDBCommentRepository.findByPostId(POST_ID)).thenReturn(comments);
 
         List<Comment> actualComments = commentService.findAllCommentsByPostId(POST_ID);
 
         assertTrue(actualComments.isEmpty());
-        Mockito.verify(dynamoDBCommentRepository).findByPostId(eq(POST_ID));
+        Mockito.verify(dynamoDBCommentRepository).findByPostId(POST_ID);
     }
 
     @Test
@@ -116,7 +118,7 @@ public class CommentServiceImplTest {
     }
 
     @Test
-    public void testUpdateComment() {
+    void testUpdateComment() {
         DynamoDBComment existingComment = new DynamoDBComment();
         existingComment.setId(COMMENT_ID);
         existingComment.setContent("Initial Content");
@@ -138,7 +140,7 @@ public class CommentServiceImplTest {
     }
 
     @Test
-    public void testUpdateCommentNotFound() {
+    void testUpdateCommentNotFound() {
         UpdateCommentDTO updateCommentDto = new UpdateCommentDTO();
         updateCommentDto.setContent("Updated Content");
 
@@ -152,7 +154,7 @@ public class CommentServiceImplTest {
         DynamoDBComment dbComment = new DynamoDBComment();
         dbComment.setPostId(POST_ID);
 
-        Mockito.when(dynamoDBCommentRepository.findById(eq(COMMENT_ID))).thenReturn(Optional.of(dbComment));
+        Mockito.when(dynamoDBCommentRepository.findById(COMMENT_ID)).thenReturn(Optional.of(dbComment));
 
         commentService.deleteComment(COMMENT_ID);
 

@@ -6,7 +6,7 @@ import ch.nexusnet.postmanager.aws.dynamodb.repositories.DynamoDBCommentReposito
 import ch.nexusnet.postmanager.model.Comment;
 import ch.nexusnet.postmanager.model.dto.CreateCommentDTO;
 import ch.nexusnet.postmanager.model.dto.UpdateCommentDTO;
-import ch.nexusnet.postmanager.service.IdGenerator;
+import ch.nexusnet.postmanager.util.IdGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class CommentControllerIntegrationTests {
+class CommentControllerIntegrationTests {
 
     private static final String CONTENT = "Initial Comment Content";
     @Autowired
@@ -65,7 +65,7 @@ public class CommentControllerIntegrationTests {
     }
 
     @Test
-    public void testAddComment() throws Exception {
+    void testAddComment() throws Exception {
         CreateCommentDTO createCommentDTO = new CreateCommentDTO();
         createCommentDTO.setPostId(postId);
         createCommentDTO.setAuthorId(authorId);
@@ -83,21 +83,21 @@ public class CommentControllerIntegrationTests {
     }
 
     @Test
-    public void testGetAllCommentsByPostId() throws Exception {
+    void testGetAllCommentsByPostId() throws Exception {
         mockMvc.perform(get("/comments/posts/{postId}", postId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
 
     @Test
-    public void testGetAllCommentsByAuthorId() throws Exception {
+    void testGetAllCommentsByAuthorId() throws Exception {
         mockMvc.perform(get("/comments/author/{authorId}", authorId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
 
     @Test
-    public void testUpdateComment() throws Exception {
+    void testUpdateComment() throws Exception {
         UpdateCommentDTO updateCommentDTO = new UpdateCommentDTO();
         updateCommentDTO.setContent("Updated content for the comment.");
 
@@ -112,7 +112,7 @@ public class CommentControllerIntegrationTests {
     }
 
     @Test
-    public void testDeleteComment() throws Exception {
+    void testDeleteComment() throws Exception {
         String commentId = savedComment.getId();
 
         mockMvc.perform(delete("/comments/{commentId}", commentId))

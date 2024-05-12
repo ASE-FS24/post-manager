@@ -1,4 +1,3 @@
-version: '3'
 services:
   localstack:
     image: localstack/localstack:latest
@@ -6,7 +5,7 @@ services:
     ports:
       - '4566:4566' # Default port for LocalStack
     environment:
-      - AWS_DEFAULT_REGION=eu-central-2
+      - AWS_DEFAULT_REGION=eu-central-1
       - EDGE_PORT=4566
       - SERVICES=dynamodb,lambda,apigateway
       - DEBUG=1 # Enable debugging output
@@ -18,34 +17,20 @@ services:
     volumes:
       - './:/etc/localstack/init/ready.d/' # Mount your project directory to automatically run scripts
       - '/var/run/docker.sock:/var/run/docker.sock' # Mount the Docker socket to allow LocalStack to manage Docker containers
-      - './target/usermanager-0.0.1-SNAPSHOT.jar:/tmp/usermanager-0.0.1-SNAPSHOT.jar' # Mount the jar file to be used by the lambda
     networks:
       - network
 
   usermanager:
     build:
       context: .
-      dockerfile: ./postmanager/Dockerfile
+      dockerfile: ./Dockerfile
     ports:
-      - "8080:8080"
+      - "8081:8081"
     environment:
       - amazon.dynamodb.endpoint=http://localstack:4566/
       - amazon.aws.accesskey=key
       - amazon.aws.secretkey=key2
       - DYNAMODB_IN_MEMORY=1
-    networks:
-      - network
-
-  frontend:
-    build:
-      context: .
-      dockerfile: ./frontend/Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - amazon.s3.endpoint=http://localstack:4566/
-      - amazon.aws.accesskey=key
-      - amazon.aws.secretkey=key2
     networks:
       - network
 
